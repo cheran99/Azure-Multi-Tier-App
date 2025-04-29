@@ -39,7 +39,7 @@ Organisations that rely on monolithic systems tend to struggle with scalability,
      ```
      wsl --install
      ```
-   - Once WSL is installed and you have created you UNIX username and password, you can now install Ansible using the following commands:
+   - Once WSL is installed and you have created your UNIX username and password, you can now install Ansible using the following commands:
   
      ```
      sudo apt update
