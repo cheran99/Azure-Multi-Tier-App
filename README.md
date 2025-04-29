@@ -16,6 +16,7 @@ Organisations that rely on monolithic systems tend to struggle with scalability,
 - MySQL (Local on VM)
 - Terraform (Infrastructure as Code)
 - Ansible (Provisioning and Setup)
+- Visual Studio Code 
 
 ## Deployment Guide
 
@@ -47,6 +48,101 @@ Organisations that rely on monolithic systems tend to struggle with scalability,
      sudo add-apt-repository --yes --update ppa:ansible/ansible
      sudo apt install ansible
      ```
+
+### Create GitHub Directory Structure
+In this step, the files for Terraform, Ansible, backend, and frontend need to be created. The GitHub directory structure for these files should look like this:
+
+```
+Azure-Multi-Tier-App/
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+├── ansible/
+│   ├── playbook.yml
+│   ├── inventory
+├── backend/
+│   └── app.py
+├── frontend/
+│   ├── index.html
+│   └── style.css
+```
+
+### Provision Infrastructure with Terraform 
+
+Once the files are created, the next step is to clone the repository using the following command:
+```
+git clone https://github.com/cheran99/Azure-Multi-Tier-App.git
+cd Azure-Multi-Tier-App
+```
+
+Next, navigate to the Terraform directory using the following command:
+`cd terraform` 
+
+Initialise Terraform:
+`terraform init`
+
+This will download the required provider plugins and prepares the working directory for Azure platforms.
+
+Open Visual Studio Code, then open the file where the contents of the cloned GitHub repository structure are saved. The directory for this would be: `C:\Windows\System32\Azure-Multi-Tier-App`
+
+![image](https://github.com/user-attachments/assets/5b760b41-caf1-4955-a728-04fd2db4a166)
+
+Go to the Terraform directory and open the `main.tf` file. This is where the Azure Resource Group will be created and configured. 
+
+Use the following configurations:
+
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=4.27.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = "multi-tier-rg"
+  location = "UK South"
+}
+
+resource "azurerm_storage_account" "app_storage" {
+  name                     = "mutitierstorcheran"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  enable_https_traffic_only = true
+}
+
+resource "azurerm_storage_container" "blob_container" {
+  name                  = "static-assets"
+  storage_account_name    = azurerm_storage_account.app_storage.name
+  container_access_type = "blob"
+}
+```
+
+
+
+## References
+- https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli
+- https://developer.hashicorp.com/terraform/cli/run
+- https://developer.hashicorp.com/terraform/cli
+
+
+
+
+
+
+
 
 
 
