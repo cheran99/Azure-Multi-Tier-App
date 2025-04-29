@@ -127,6 +127,7 @@ resource "azurerm_storage_container" "blob_container" {
 }
 ```
 
+With the above configurations, the Terraform Azure provider is set up, and a resource group, storage account, and blob container for static files or backups are created. 
 
 
 ## References
