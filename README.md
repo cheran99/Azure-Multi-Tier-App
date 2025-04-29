@@ -17,6 +17,10 @@ Organisations that rely on monolithic systems tend to struggle with scalability,
 - Terraform (Infrastructure as Code)
 - Ansible (Provisioning and Setup)
 
+## Deployment Guide
+
+### Setting Up Command Line Interface (CLI) Tools
+1. Install Azure CLI using the following link: <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli"> Install Azure CLI </a>
 
 
 
