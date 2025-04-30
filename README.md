@@ -112,7 +112,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_storage_account" "app_storage" {
-  name                     = "mutitierstorcheran"
+  name                     = "multitierstorcheran"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -127,8 +127,53 @@ resource "azurerm_storage_container" "blob_container" {
 }
 ```
 
-With the above configurations, the Terraform Azure provider is set up, and a resource group, storage account, and blob container for static files or backups are created. 
+With the above configurations, the Terraform Azure provider is set up, and a resource group, storage account, and blob container for static files or backups are created. Save the file.
 
+Open the `variables.tf` file. The purpose of this file is to allow the user to parametrise their Terraform configurations to ensure that the values can be easily reused and modified without editing the main files.
+
+Use the following configurations:
+```
+variable "location" {
+    description = "Region to deploy resources in"
+    type = string
+    default = "UK South"
+}
+
+variable "resources_group_name" {
+    decription = "Name of resource group"
+    type = string
+    default = "multi-tier-rg"
+}
+
+variable "storage_account_name" {
+    description = "Globally unique name of storage account"
+    type = string
+    default = "multitierstorcheran"
+}
+
+variable "container_name" {
+    description = "Name of blob storage container"
+    type = string
+    default = "static-assets"
+}
+```
+
+Save the `variables.tf` file. 
+
+Next, open the `outputs.tf` file. The purpose of this file is to display the important details about the infrastructure in the command line after you use the `terraform apply` command. 
+
+Use the following configurations:
+```
+output "resource_group_name" {
+    description = "Name of resource group"
+    value = azurerm_resource_group.rg.name
+}
+
+output "storage_account_name" {
+    description = "Name of storage account"
+    value = azurerm_storage_account.app_storage.name
+}
+```
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
