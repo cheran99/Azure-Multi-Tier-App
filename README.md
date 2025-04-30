@@ -96,8 +96,8 @@ Use the following configurations:
 terraform {
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=4.27.0"
+      source = "hashicorp/azurerm"
+      version = "4.27.0"
     }
   }
 }
@@ -117,7 +117,6 @@ resource "azurerm_storage_account" "app_storage" {
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  enable_https_traffic_only = true
 }
 
 resource "azurerm_storage_container" "blob_container" {
@@ -140,7 +139,7 @@ variable "location" {
 }
 
 variable "resources_group_name" {
-    decription = "Name of resource group"
+    description = "Name of resource group"
     type = string
     default = "multi-tier-rg"
 }
@@ -175,6 +174,50 @@ output "storage_account_name" {
 }
 ```
 
+Save the `outputs.tf` file and then initialise Terraform:
+`terraform init`
+![image](https://github.com/user-attachments/assets/6f2bf84c-0491-4479-8e96-10fccb934f78)
+
+After initialising, create an execution plan that allows you to preview the changes Terraform plans to make to your infrastructure. What Terraform does is read the current state of any existing remote objects to ensure the Terraform state is up to date, notes any differences between the current and previous configurations, and proposes any changes that need to be made before applying them. To do this, run the following command:
+`terraform plan`
+
+![image](https://github.com/user-attachments/assets/63eec939-a8f0-4c58-906b-258e0c7ee2c7)
+![image](https://github.com/user-attachments/assets/ea7d9325-faa4-43f0-850a-2b61e7edbb4d)
+![image](https://github.com/user-attachments/assets/b1d6a89a-64d3-4c08-8f5f-58fde6c8b313)
+
+The output shown above shows a detailed overview that Terraform will create 3 new resources such as the resource group, storage account, and blob container. The output also recommends changes that need to be made to the `main.tf` file before applying them. In this case, the resource argument needs to be changed from `storage_account_name` to `storage_account_id`. This is because the Azure Resource Manager requires this change for versions 5.0+ due to `storage_account_name` being deprecated in favour of `storage_account_id`. Additionally, Azure's API is moving towards using resource IDs instead of plain names. 
+
+This is what the change will look like in the blob container block in the `main.tf` file:
+```
+resource "azurerm_storage_container" "blob_container" {
+  name                  = "static-assets"
+  storage_account_id    = azurerm_storage_account.app_storage.id
+  container_access_type = "blob"
+}
+```
+Save the file and then reinitialise Terraform: `terraform init`.
+
+Then run the exectution plan again to preview the changes: `terraform plan`
+![image](https://github.com/user-attachments/assets/f33b1270-fd68-4221-b0c3-c5306f000612)
+
+As shown above, Terraform shows that there are no changes needed to be made as it will create 3 resources. 
+
+Next, apply the changes Terraform proposed in the execution plan: `terraform apply`
+
+Terraform will create an execution plan, and it will give you a prompt to approve the plan before taking the action to create the 3 resources.
+
+![image](https://github.com/user-attachments/assets/96b9f8fd-c573-4554-b2e8-8b5f76810752)
+
+As shown above, Terraform successfully created 3 resources. 
+
+When you log in to the Azure portal in your browser, the resource group, storage account, and blob container have been successfully integrated:
+![image](https://github.com/user-attachments/assets/8258a8e6-aeb6-4827-a586-11aa19727200)
+![image](https://github.com/user-attachments/assets/2b4e9cd2-ce93-406b-9f99-d19758c3297d)
+![image](https://github.com/user-attachments/assets/0a3ddb3f-2bcc-4ed2-b5d2-fa4f99ab07c8)
+
+
+
+
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
@@ -182,6 +225,8 @@ output "storage_account_name" {
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli
 - https://developer.hashicorp.com/terraform/cli/run
 - https://developer.hashicorp.com/terraform/cli
+- https://developer.hashicorp.com/terraform/cli/commands/plan
+- https://spacelift.io/blog/terraform-tutorial
 
 
 
