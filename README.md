@@ -230,6 +230,38 @@ Set "Static website" to enabled. You will then be asked to specify the index doc
 
 Click Save to apply the changes. 
 
+The next step is to upload the frontend files to the `$web` container from a source directory using the Azure CLI. To do this, open PowerShell and log in to Azure using `az login`.
+
+Next, use the following command to upload the frontend files to the `$web` container:
+```
+az storage blob upload-batch -s <source-path> -d '$web' --account-name <storage-account-name>
+```
+
+Replace the `<source-path>` with the `frontend` directory file path on your local machine, which is part of the cloned GitHub repository. Replace the `<storage-account-name>` with the name of the storage account created earlier. The command line should look something like this:
+```
+az storage blob upload-batch -s "C:\Windows\System32\Azure-Multi-Tier-App\frontend" -d '$web' --account-name multitierstorcheran
+```
+
+![image](https://github.com/user-attachments/assets/da438bc8-78b1-4813-89fd-4a506fd186a7)
+
+As shown above, the `frontend` files have successfully been uploaded to the `$web` container, and a primary endpoint URL has been created as shown in the "Static website" section:
+![image](https://github.com/user-attachments/assets/7ed0892c-0b42-4d19-9bf8-65f4c372a995)
+
+You can now view your hosted frontend by copying and pasting the primary endpoint URL into your web browser. Since the content in the `index.html` and `style.css` files is empty, the webpage for the static website is currently blank:
+![image](https://github.com/user-attachments/assets/fa4a4029-e4b9-45dc-a104-9c3afa660a81)
+
+The next step would be to fill in the contents of the `index.html` and `style.css`. To do this, open Visual Studio Code, and then open the folder for the cloned GitHub repository. Head over to the `frontend` directory, and from there you can edit the `index.html` and `style.css` files:
+![image](https://github.com/user-attachments/assets/39d4e613-b6bb-4953-9faa-f71611aa80d5)
+
+Once you fill in the contents of the `index.html` and `style.css` files, disable and then enable the "Static website". Next, reupload the `frontend` files to the `$web` container using Azure CLI. Since the `frontend` files already exist, add `--overwrite` at the end of the command. The command should look something like this:
+```
+az storage blob upload-batch -s "C:\Windows\System32\Azure-Multi-Tier-App\frontend" -d '$web' --account-name multitierstorcheran --overwrite
+```
+
+Once it has been reuploaded, go to the "Static website" and copy and paste the new primary endpoint URL into the browser. The webpage should look something like this based on the configurations made to the `index.html` and `style.css` files:
+
+![image](https://github.com/user-attachments/assets/868536a2-7c39-4935-a585-0a640929bd96)
+
 
 
 ## References
@@ -242,6 +274,9 @@ Click Save to apply the changes.
 - https://developer.hashicorp.com/terraform/cli/commands/plan
 - https://spacelift.io/blog/terraform-tutorial
 - https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website
+- https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-how-to?tabs=azure-portal#upload-files
+- https://www.browserstack.com/guide/build-a-website-using-html-css
+- https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-host
 
 
 
