@@ -30,3 +30,23 @@ resource "azurerm_storage_container" "blob_container" {
   storage_account_id    = azurerm_storage_account.app_storage.id
   container_access_type = "blob"
 }
+
+resource "azurerm_service_plan" "app_service_plan" {
+  name                = "appserviceplan-multitier"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  os_type             = "Linux"
+  sku_name            = "S1"
+}
+
+resource "azurerm_linux_web_app" "backend_app" {
+  name                = "multitier-backend-app"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  service_plan_id = azurerm_service_plan.app_service_plan.id
+
+  site_config {}
+}
+
+
+
