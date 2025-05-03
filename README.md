@@ -211,18 +211,20 @@ Terraform will create an execution plan, and it will give you a prompt to approv
 As shown above, Terraform successfully created 3 resources. 
 
 When you log in to the Azure portal in your browser, the resource group, storage account, and blob container have been successfully integrated:
-![image](https://github.com/user-attachments/assets/8258a8e6-aeb6-4827-a586-11aa19727200)
-![image](https://github.com/user-attachments/assets/2b4e9cd2-ce93-406b-9f99-d19758c3297d)
-![image](https://github.com/user-attachments/assets/0a3ddb3f-2bcc-4ed2-b5d2-fa4f99ab07c8)
+![image](https://github.com/user-attachments/assets/05fc6a07-04a5-411b-802d-77ad94634b1e)
+![image](https://github.com/user-attachments/assets/1a32a1bd-e1e5-4c65-8afb-a4d36e5afd82)
+![image](https://github.com/user-attachments/assets/5ca5b8dc-1e94-404b-be33-5a5273b0b863)
+
 
 ### Upload Frontend Files To Azure Blob Storage To Enable Static Web Hosting
 
 Now that the Azure infrastructure has been provisioned with Terraform, and 3 resources have been successfully created as a result, the next step is to enable static web hosting by uploading frontend files to Azure Blob Storage. This would enable users to have a public endpoint to access the frontend through a public URL without requiring the web server to render content. The use of Azure Blob Storage is a cost-efficient way to host static content. 
 
 To enable static web hosting, go to the Azure portal. On the left panel, select "Storage accounts". Once you are on this page, select the storage account created earlier:
-![image](https://github.com/user-attachments/assets/84cd4530-7e75-4e6c-bd79-bd240c94c2fc)
+![image](https://github.com/user-attachments/assets/37266be5-dcec-4f74-9bb7-7ee7fe10d75a)
 
 Select the "Data management" section on the left panel and then select "Static website":
+
 ![image](https://github.com/user-attachments/assets/14b6706c-31c6-4949-9ed5-192f78aec48a)
 
 Set "Static website" to enabled. You will then be asked to specify the index document name, which is `index.html` and is in the `frontend` directory:
@@ -245,6 +247,7 @@ az storage blob upload-batch -s "C:\Windows\System32\Azure-Multi-Tier-App\fronte
 ![image](https://github.com/user-attachments/assets/da438bc8-78b1-4813-89fd-4a506fd186a7)
 
 As shown above, the `frontend` files have successfully been uploaded to the `$web` container, and a primary endpoint URL has been created as shown in the "Static website" section:
+
 ![image](https://github.com/user-attachments/assets/7ed0892c-0b42-4d19-9bf8-65f4c372a995)
 
 You can now view your hosted frontend by copying and pasting the primary endpoint URL into your web browser. Since the content in the `index.html` and `style.css` files is empty, the webpage for the static website is currently blank:
@@ -262,6 +265,54 @@ Once it has been reuploaded, go to the "Static website" and copy and paste the n
 
 ![image](https://github.com/user-attachments/assets/868536a2-7c39-4935-a585-0a640929bd96)
 
+### Provision Azure App Service Plan and Linux Web App with Terraform
+
+Since the Azure App Service Plan and Linux Web App was not defined with Terraform earlier, that will need to be provisioned first before deploying backend configurations with Ansible to Azure App Service.
+
+To do this, log in to WSL on PowerShell. Then navigate to the cloned GitHub directory, and then to the Terraform directory. Once you are in this directory, initialise Terraform using the `terraform init` command. 
+
+Open Visual Studio Code, then open the folder that has the contents of the cloned GitHub repository, which is the `Azure-Multi-Tier-App` folder. Go to the `terraform` directory, open the `main.tf` file and add the following configurations:
+```
+resource "azurerm_service_plan" "app_service_plan" {
+  name                = "appserviceplan-multitier"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  os_type             = "Linux"
+  sku_name            = "S1"
+}
+
+resource "azurerm_linux_web_app" "backend_app" {
+  name                = "multitier-backend-app"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  service_plan_id = azurerm_service_plan.app_service_plan.id
+
+  site_config {}
+}
+```
+
+Next, create an execution plan using the following command:
+```
+terraform plan -lock=false
+```
+
+The reason why `-lock=false` is added to the command is because the permissions for the `terraform.tfstate` only contains read-only permissions, therefore the lock for the `.tfstate` file needs to be unlocked so that the App Service and App Service Plan can be provisioned with Terraform. Disabling the lock is not recommended especially in shared environements because if multiple users or processes modify the state file at the same time, this can potentially cause state corruption. Since this project is a low-scale project that only involves one user, disabling the lock is safe in this scenario.
+
+Once Terraform shows the proposed changes in the execution plan, apply the changes using the following command:
+```
+terraform apply -lock=false
+```
+
+When prompted, type "yes". This will create 2 resources, the App Service Plan and the Linux Web App Service for the backend app. 
+
+![image](https://github.com/user-attachments/assets/6aa24807-d759-4a10-af4f-ab060fe990ee)
+
+![image](https://github.com/user-attachments/assets/effd926d-b856-43e7-beb4-1f4e0c22d820)
+
+### Deploy Backend with Ansible to Azure App Service
+
+
+
 
 
 ## References
@@ -277,6 +328,10 @@ Once it has been reuploaded, go to the "Static website" and copy and paste the n
 - https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-how-to?tabs=azure-portal#upload-files
 - https://www.browserstack.com/guide/build-a-website-using-html-css
 - https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-host
+- https://learn.microsoft.com/en-us/azure/app-service/provision-resource-terraform
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service.html
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_web_app
 
 
 
