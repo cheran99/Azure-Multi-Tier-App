@@ -219,6 +219,19 @@ When you log in to the Azure portal in your browser, the resource group, storage
 
 Now that the Azure infrastructure has been provisioned with Terraform, and 3 resources have been successfully created as a result, the next step is to enable static web hosting by uploading frontend files to Azure Blob Storage. This would enable users to have a public endpoint to access the frontend through a public URL without requiring the web server to render content. The use of Azure Blob Storage is a cost-efficient way to host static content. 
 
+To enable static web hosting, go to the Azure portal. On the left panel, select "Storage accounts". Once you are on this page, select the storage account created earlier:
+![image](https://github.com/user-attachments/assets/84cd4530-7e75-4e6c-bd79-bd240c94c2fc)
+
+Select the "Data management" section on the left panel and then select "Static website":
+![image](https://github.com/user-attachments/assets/14b6706c-31c6-4949-9ed5-192f78aec48a)
+
+Set "Static website" to enabled. You will then be asked to specify the index document name, which is `index.html` and is in the `frontend` directory:
+![image](https://github.com/user-attachments/assets/e2b08e6d-f35e-4971-933b-b77727b6f140)
+
+Click Save to apply the changes. 
+
+
+
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
