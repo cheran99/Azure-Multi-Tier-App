@@ -296,7 +296,7 @@ Next, create an execution plan using the following command:
 terraform plan -lock=false
 ```
 
-The reason why `-lock=false` is added to the command is because the permissions for the `terraform.tfstate` only contains read-only permissions, therefore the lock for the `.tfstate` file needs to be unlocked so that the App Service and App Service Plan can be provisioned with Terraform. Disabling the lock is not recommended especially in shared environements because if multiple users or processes modify the state file at the same time, this can potentially cause state corruption. Since this project is a low-scale project that only involves one user, disabling the lock is safe in this scenario.
+The reason why `-lock=false` is added to the command is that the permissions for the `terraform.tfstate` only contain read-only permissions, therefore, the lock for the `.tfstate` file needs to be unlocked so that the App Service and App Service Plan can be provisioned with Terraform. Disabling the lock is not recommended, especially in shared environments, because if multiple users or processes modify the state file simultaneously, this can potentially cause state corruption. Since this project is a low-scale project involving only one user, disabling the lock is safe.
 
 Once Terraform shows the proposed changes in the execution plan, apply the changes using the following command:
 ```
@@ -310,6 +310,9 @@ When prompted, type "yes". This will create 2 resources, the App Service Plan an
 ![image](https://github.com/user-attachments/assets/effd926d-b856-43e7-beb4-1f4e0c22d820)
 
 ### Deploy Backend with Ansible to Azure App Service
+
+Now that the Azure App Service Plan and Linux Web App Service have been provisioned with Terraform, the next step would be to utilise Ansible to deploy the backend application to Azure App Service. This step will ensure that the configuration and deployment of the backend code to Azure App Service are automated and repeated without manual intervention. This allows easier management of deployments across multiple environments and easier integrations with CI/CD pipelines.
+
 
 
 
