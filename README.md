@@ -309,6 +309,34 @@ When prompted, type "yes". This will create 2 resources, the App Service Plan an
 
 ![image](https://github.com/user-attachments/assets/effd926d-b856-43e7-beb4-1f4e0c22d820)
 
+### Configure Backend Application
+
+This step will involve adding a basic Flask backend to the `app.py` file so that the Azure App Service has something to run when the backend is deployed.
+
+Before adding contents to the `app.py` file, install Flask to the local machine if you haven't already done so. You can do this on the PowerShell using the following command:
+```
+pip install flask
+```
+
+Ensure that the `pip` command is the latest version.
+
+Open Visual Studio Code, and then open the `Azure-Multi-Tier-App` repository. Head over to the `backend` directory and write the following configurations in the `app.py` file:
+```
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/health")
+def health_check():
+    return "Backend is running"
+```
+
+The code shown above ensures that the backend serves the frontend in a multi-tier application.
+
 ### Deploy Backend with Ansible to Azure App Service
 
 Now that the Azure App Service Plan and Linux Web App Service have been provisioned with Terraform, the next step would be to utilise Ansible to deploy the backend application to Azure App Service. This step will ensure that the configuration and deployment of the backend code to Azure App Service are automated and repeated without manual intervention. This allows easier management of deployments across multiple environments and easier integrations with CI/CD pipelines.
@@ -427,6 +455,8 @@ This will give the following output:
 - https://learn.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
 - https://spacelift.io/blog/ansible-variables
 - https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
+- https://flask.palletsprojects.com/en/stable/installation/
+- https://flask.palletsprojects.com/en/latest/quickstart/#a-minimal-application
 
 
 
