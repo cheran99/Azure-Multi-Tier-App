@@ -313,7 +313,90 @@ When prompted, type "yes". This will create 2 resources, the App Service Plan an
 
 Now that the Azure App Service Plan and Linux Web App Service have been provisioned with Terraform, the next step would be to utilise Ansible to deploy the backend application to Azure App Service. This step will ensure that the configuration and deployment of the backend code to Azure App Service are automated and repeated without manual intervention. This allows easier management of deployments across multiple environments and easier integrations with CI/CD pipelines.
 
+Open PowerShell, and log in to WSL using the following command:
+```
+wsl -d Ubuntu
+```
 
+Once logged in, install Ansible using the following command if you haven't done so:
+```
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
+```
+
+Next, install Azure Collection for Ansible using the following command. Modules to manage Azure resources are included in this collection:
+```
+ansible-galaxy collection install azure.azcollection --force
+```
+
+Create a service principal to enable authentication with Ansible using the following command:
+```
+az ad sp create-for-rbac --name ansible-backend --role contributor --scopes /subscriptions/mySubscriptionID/resourceGroups/myResourceGroupName
+```
+
+Replace `mySubscriptionID` with your Azure subscription ID used to create the resources. Replace `myResourceGroupName` with the resource group created earlier. This will create a service principal identity that allows Ansible authenticated access to Azure resources. You can find the subscription ID in the Azure portal.
+
+Once you have created the service principal using the command shown above, you will be provided with the `appID`, `displayName`, `password`, and `tenant`. The `appID` is the service principal application ID, and `tenant` is the tenant ID.  
+
+The next step is to set the environmental variables by exporting your service principal values so that Ansible can use them. This is done using the following commands:
+```
+export AZURE_SUBSCRIPTION_ID=<subscription_id>
+export AZURE_CLIENT_ID=<appID>
+export AZURE_SECRET=<password>
+export AZURE_TENANT=<tenant>
+```
+
+Ensure the `backend` files in the `Azure-Multi-Tier-App` repository include the following:
+- `app.py`
+
+On the same terminal in PowerShell, navigate to the cloned GitHub repository, and then to the `backend` directory using the following command:
+```
+cd "Azure-Multi-Tier-App/backend"
+```
+
+Create a ZIP file package for the backend file so that the application can be deployed to Azure App Service. To create the ZIP file, run the following command:
+```
+zip -r backend.zip .
+```
+
+Open Visual Studio Code, and then open the `Azure-Multi-Tier-App` repository. Head over to the `ansible` directory and write the following configurations in the `playbook.yml` file:
+```
+- name: Deploy backend to Azure App Service 
+  hosts: localhost
+  connection: local
+  vars:
+    resource_group: multi-tier-rg
+    webapp_name: multitier-backend-app
+    plan_name: appserviceplan-multitier
+    location: uksouth
+    zip_path: "C:/Windows/System32/Azure-Multi-Tier-App/backend/backend.zip"
+
+  tasks:
+    - name: Deploy ZIP Package to Azure Web Service
+      command: >
+        az webapp deployment source config-zip
+        --resource-group {{ resource_group }}
+        --name {{ webapp_name }}
+        --src {{ zip_path }}       
+```
+
+This will deploy the backend application from the ZIP package to the Azure Web Service. 
+
+On the same terminal in PowerShell, change the directory to the `ansible` directory using the following commands:
+```
+cd ..
+cd ansible
+```
+
+Run the playbook file (`playbook.yml`) using the following command:
+```
+ansible-playbook playbook.yml
+```
+
+This will give the following output:
+![image](https://github.com/user-attachments/assets/bbc93046-dcc8-4027-bc91-bc949144e64a)
 
 
 
@@ -335,6 +418,15 @@ Now that the Azure App Service Plan and Linux Web App Service have been provisio
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service.html
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_web_app
+- https://galaxy.ansible.com/ui/repo/published/azure/azcollection/
+- https://learn.microsoft.com/en-us/azure/developer/ansible/install-on-linux-vm?tabs=azure-cli#install-ansible-on-an-azure-linux-virtual-machine
+- https://learn.microsoft.com/en-us/cli/azure/azure-cli-sp-tutorial-1?wt.mc_id=searchAPI_azureportal_inproduct_rmskilling&sessionId=cbce6ec3338248c0be2c8463c754def8&tabs=powershell
+- https://learn.microsoft.com/en-us/azure/developer/ansible/azure-web-apps-configure
+- https://docs.ansible.com/ansible/latest/collections/azure/azcollection/index.html#plugin-index
+- https://www.tutorialspoint.com/yaml/yaml_scalars_and_tags.htm#:~:text=YAML%20flow%20scalars%20include%20plain,always%20folded%20in%20this%20structure.
+- https://learn.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
+- https://spacelift.io/blog/ansible-variables
+- https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
 
 
 
