@@ -457,6 +457,8 @@ This will give the following output:
 - https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
 - https://flask.palletsprojects.com/en/stable/installation/
 - https://flask.palletsprojects.com/en/latest/quickstart/#a-minimal-application
+- https://www.geeksforgeeks.org/flask-rendering-templates/
+- https://github.com/Azure-Samples/python-docs-hello-world/blob/master/app.py
 
 
 
