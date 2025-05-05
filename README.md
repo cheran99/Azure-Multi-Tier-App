@@ -481,6 +481,7 @@ This will give the following output:
 - https://www.geeksforgeeks.org/flask-rendering-templates/
 - https://github.com/Azure-Samples/python-docs-hello-world/blob/master/app.py
 - https://realpython.com/python-web-applications/
+- https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
 
 
 
