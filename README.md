@@ -335,11 +335,31 @@ def health_check():
     return "Backend is running"
 ```
 
-The code shown above ensures that the backend serves the frontend in a multi-tier application.
+The code above ensures that the backend serves the frontend in a multi-tier application.
+
+For the backend code to function properly, a `requirements.txt` file must also be in this `backend` directory. The `requirements.txt` file lists all the dependencies that Azure App Service needs to install when the backend code is deployed to the server.
+
+On the `backend` directory in Visual Studio Code, create a `requirements.txt` file. The list of dependencies in this file includes all the Python packages, including Flask. Ensure to include their version number. To check this, open PowerShell and run the following command:
+```
+flask --version
+```
+
+This will give the following output:
+```
+Python 3.10.1
+Flask 3.0.2
+Werkzeug 3.0.1
+```
+Add Flask and Werkzeug, along with their version numbers, to the `requirements.txt` file. The file should look something like this:
+```
+Flask==3.0.2
+Werkzeug==3.0.1
+```
+
 
 ### Deploy Backend with Ansible to Azure App Service
 
-Now that the Azure App Service Plan and Linux Web App Service have been provisioned with Terraform, the next step would be to utilise Ansible to deploy the backend application to Azure App Service. This step will ensure that the configuration and deployment of the backend code to Azure App Service are automated and repeated without manual intervention. This allows easier management of deployments across multiple environments and easier integrations with CI/CD pipelines.
+Now that the Azure App Service Plan and Linux Web App Service have been provisioned with Terraform and the backend code has been configured, the next step would be to utilise Ansible to deploy the backend application to Azure App Service. This step will ensure that the configuration and deployment of the backend code to Azure App Service are automated and repeated without manual intervention. This allows easier management of deployments across multiple environments and easier integrations with CI/CD pipelines.
 
 Open PowerShell, and log in to WSL using the following command:
 ```
@@ -378,6 +398,7 @@ export AZURE_TENANT=<tenant>
 
 Ensure the `backend` files in the `Azure-Multi-Tier-App` repository include the following:
 - `app.py`
+- `requirements.txt`
 
 On the same terminal in PowerShell, navigate to the cloned GitHub repository, and then to the `backend` directory using the following command:
 ```
@@ -459,6 +480,7 @@ This will give the following output:
 - https://flask.palletsprojects.com/en/latest/quickstart/#a-minimal-application
 - https://www.geeksforgeeks.org/flask-rendering-templates/
 - https://github.com/Azure-Samples/python-docs-hello-world/blob/master/app.py
+- https://realpython.com/python-web-applications/
 
 
 
