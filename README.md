@@ -482,6 +482,8 @@ This will give the following output:
 - https://github.com/Azure-Samples/python-docs-hello-world/blob/master/app.py
 - https://realpython.com/python-web-applications/
 - https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
+- https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_webapp_module.html#ansible-collections-azure-azcollection-azure-rm-webapp-module
+- https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_appserviceplan_module.html#ansible-collections-azure-azcollection-azure-rm-appserviceplan-module
 
 
 
