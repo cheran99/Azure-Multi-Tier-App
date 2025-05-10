@@ -485,8 +485,34 @@ Save the file.
 
 The next step is to integrate Flask-CORS into the `app.py` file. CORS stands for cross-origin resource sharing, and it is a security mechanism that controls how resources can be fetched from different external domains. This prevents unauthorised domains from accessing sensitive information without permissions. In this project, CORS is being integrated into the backend file so that it can be configured to allow the frontend to fetch data from the backend.   
 
+Before adding the Flask-CORS feature to the `app.py`, this Flask-CORS package needs to be installed. To do this, open PowerShell and run the following command:
+```
+pip install Flask-Cors
+```
 
+Next, open the `app.py` file in Visual Studio Code and add the following configurations, and it should look something like this:
+```
+from flask import Flask, render_template
+from flask_cors import CORS 
+import os
 
+app = Flask(__name__)
+CORS(app)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/health")
+def health_check():
+    return "Backend is running"
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
+```
+
+Save the file. Update the `requirements.txt` to add Flask-CORS along with its version number. It should be `Flask-Cors==5.0.1`. Save the file.
 
 
 
