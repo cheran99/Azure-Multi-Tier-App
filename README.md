@@ -438,7 +438,7 @@ Open Visual Studio Code, and then open the `Azure-Multi-Tier-App` repository. He
         --src-path "C:/Windows/System32/Azure-Multi-Tier-App/backend.zip"
 ```
 
-This will deploy the backend application from the ZIP package to the Azure Web Service. 
+This will deploy the backend application from the ZIP package to the Azure App Service. 
 
 On the same terminal in PowerShell, change the directory to the `ansible` directory using the following commands:
 ```
@@ -459,7 +459,31 @@ To verify that the web app is working with both the frontend and backend deploye
 ![image](https://github.com/user-attachments/assets/b3d7de0d-02f6-4aa3-ab53-3aa7dbcffc78)
 
 The output shown above is the main page for the web app. To check the health of the web application, add `/health` at the end of the URL as defined by the `@app.route("/health")` in the `app.py` file:
+
 ![image](https://github.com/user-attachments/assets/d6db4b6b-898a-45ff-bc0a-30c219ae7e1e)
+
+### Connecting Frontend to Backend
+
+Since the frontend files have been deployed to the Azure Blob Storage, and the backend files have been deployed to the Azure App Service, the next step would be to configure both files so that the frontend knows how to communicate with the backend. 
+
+Open Visual Studio Code, then open the `Azure-Multi-Tier-App` repository. Head over to the `frontend` directory and open the `index.html` file. Add the following configurations to the file to ensure that it has the API URL for the Linux Web App:
+```
+<script>
+    fetch("https://multitier-backend-app.azurewebsites.net/health")
+        .then(response => response.text())
+        .then(data => { 
+            document.getElementById("api-response").innerText = data
+        })
+        .catch(error => {
+            console.error("Backend failed to run", error);
+            document.getElementById("api-response").innerText = "Unable to connect to backend.";
+        });
+</script>
+```
+
+Save the file. 
+
+
 
 
 
@@ -498,6 +522,9 @@ The output shown above is the main page for the web app. To check the health of 
 - https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
 - https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_webapp_module.html#ansible-collections-azure-azcollection-azure-rm-webapp-module
 - https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_appserviceplan_module.html#ansible-collections-azure-azcollection-azure-rm-appserviceplan-module
+- https://www.youtube.com/watch?v=ujiJaz2bRII
+- https://medium.com/swlh/making-use-of-apis-in-your-front-end-c168e343bea3
+- https://www.digitalocean.com/community/tutorials/how-to-use-the-javascript-fetch-api-to-get-data
 
 
 
