@@ -483,6 +483,8 @@ Open Visual Studio Code, then open the `Azure-Multi-Tier-App` repository. Head o
 
 Save the file. 
 
+The next step is to integrate Flask-CORS into the `app.py` file. CORS stands for cross-origin resource sharing, and it is a security mechanism that controls how resources can be fetched from different external domains. This prevents unauthorised domains from accessing sensitive information without permissions. In this project, CORS is being integrated into the backend file so that it can be configured to allow the frontend to fetch data from the backend.   
+
 
 
 
@@ -525,6 +527,8 @@ Save the file.
 - https://www.youtube.com/watch?v=ujiJaz2bRII
 - https://medium.com/swlh/making-use-of-apis-in-your-front-end-c168e343bea3
 - https://www.digitalocean.com/community/tutorials/how-to-use-the-javascript-fetch-api-to-get-data
+- https://medium.com/%40mterrano1/cors-in-a-flask-api-38051388f8cc
+- https://www.geeksforgeeks.org/how-to-install-flask-cors-in-python/
 
 
 
