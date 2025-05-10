@@ -514,6 +514,28 @@ if __name__ == "__main__":
 
 Save the file. Update the `requirements.txt` to add Flask-CORS along with its version number. It should be `Flask-Cors==5.0.1`. Save the file.
 
+The next step is to redeploy the frontend files to Azure Blob Storage using the following command on PowerShell:
+```
+az storage blob upload-batch -s "C:\Windows\System32\Azure-Multi-Tier-App\frontend" -d '$web' --account-name multitierstorcheran --overwrite
+```
+Go to the Azure portal, then to the storage account, and then to the "Static website" page. Once you are on this page, disable and then enable the static website. This will refresh the primary endpoint URL.
+
+On PowerShell, change the directory to the `backend` directory so that this directory is converted to a ZIP file using the following commands:
+```
+cd "Azure-Multi-Tier-App/backend"
+zip -r backend.zip .
+```
+
+Move the `backend.zip` file to the main directory. Change the directory to `ansible` on PowerShell using the following command:
+```
+cd ..
+cd ansible
+```
+
+Run the `backend_play.yml` playbook using the following `ansible-playbook` command to redeploy the updated backend application:
+```
+ansbile-playbook backend_play.yml
+```
 
 
 ## References
