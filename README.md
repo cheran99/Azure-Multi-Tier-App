@@ -309,11 +309,16 @@ When prompted, type "yes". This will create 2 resources, the App Service Plan an
 
 ![image](https://github.com/user-attachments/assets/effd926d-b856-43e7-beb4-1f4e0c22d820)
 
+On the Linux Web App Service page, go to "Settings", then to "Configuration". On the "Stack Settings", set them to Python along with the latest major and minor versions:
+![image](https://github.com/user-attachments/assets/7db947ac-d5ce-491d-ae7a-598284168d39)
+
+Once the runtime stack is set, you can save the configuration. The reason why the runtime stack should be Python is that the backend application is a Flask application that runs on Python. 
+
 ### Configure Backend Application
 
-This step will involve adding a basic Flask backend to the `app.py` file so that the Azure App Service has something to run when the backend is deployed.
+This step will involve adding a basic Flask backend codeto the `app.py` file so that the Azure App Service has something to run when the backend is deployed.
 
-Before adding contents to the `app.py` file, install Flask to the local machine if you haven't already done so. You can do this on the PowerShell using the following command:
+Before adding content to the `app.py` file, install Flask on the local machine if you haven't already done so. You can do this on the PowerShell using the following command:
 ```
 pip install flask
 ```
@@ -323,6 +328,7 @@ Ensure that the `pip` command is the latest version.
 Open Visual Studio Code, and then open the `Azure-Multi-Tier-App` repository. Head over to the `backend` directory and write the following configurations in the `app.py` file:
 ```
 from flask import Flask, render_template
+import os
 
 app = Flask(__name__)
 
@@ -333,6 +339,10 @@ def index():
 @app.route("/health")
 def health_check():
     return "Backend is running"
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
 ```
 
 The code above ensures that the backend serves the frontend in a multi-tier application.
@@ -356,6 +366,7 @@ Flask==3.0.2
 Werkzeug==3.0.1
 ```
 
+Create two sub-directories in the `backend` directory and label them as `static` and `templates`. The `template` folder should have the `index.html` file created earlier, and the `static` folder should have the `style.css` file that was also created earlier. 
 
 ### Deploy Backend with Ansible to Azure App Service
 
@@ -399,8 +410,10 @@ export AZURE_TENANT=<tenant>
 Ensure the `backend` files in the `Azure-Multi-Tier-App` repository include the following:
 - `app.py`
 - `requirements.txt`
+- `templates/index.html`
+- `static/style.css`
 
-On the same terminal in PowerShell, navigate to the cloned GitHub repository, and then to the `backend` directory using the following command:
+On the same terminal in PowerShell, navigate to the cloned GitHub repository and then to the `backend` directory using the following command:
 ```
 cd "Azure-Multi-Tier-App/backend"
 ```
@@ -415,20 +428,14 @@ Open Visual Studio Code, and then open the `Azure-Multi-Tier-App` repository. He
 - name: Deploy backend to Azure App Service 
   hosts: localhost
   connection: local
-  vars:
-    resource_group: multi-tier-rg
-    webapp_name: multitier-backend-app
-    plan_name: appserviceplan-multitier
-    location: uksouth
-    zip_path: "C:/Windows/System32/Azure-Multi-Tier-App/backend/backend.zip"
 
   tasks:
-    - name: Deploy ZIP Package to Azure Web Service
+    - name: Deploy ZIP Package using Azure CLI
       command: >
-        az webapp deployment source config-zip
-        --resource-group {{ resource_group }}
-        --name {{ webapp_name }}
-        --src {{ zip_path }}       
+        az webapp deploy 
+        --resource-group multi-tier-rg
+        --name multitier-backend-app
+        --src-path "C:/Windows/System32/Azure-Multi-Tier-App/backend.zip"
 ```
 
 This will deploy the backend application from the ZIP package to the Azure Web Service. 
@@ -439,13 +446,20 @@ cd ..
 cd ansible
 ```
 
-Run the playbook file (`playbook.yml`) using the following command:
+Run the playbook file (`backend_play.yml`) using the following command:
 ```
-ansible-playbook playbook.yml
+ansible-playbook backend_play.yml
 ```
 
 This will give the following output:
-![image](https://github.com/user-attachments/assets/bbc93046-dcc8-4027-bc91-bc949144e64a)
+![image](https://github.com/user-attachments/assets/bd405719-2f92-417f-bfc7-f9e6d92e5acd)
+
+To verify that the web app is working with both the frontend and backend deployed, go to the Azure portal using the credentials created earlier and go to the `multitier-backend-app` created earlier. Next, click the default domain to see the output for the web app:
+
+![image](https://github.com/user-attachments/assets/b3d7de0d-02f6-4aa3-ab53-3aa7dbcffc78)
+
+The output shown above is the main page for the web app. To check the health of the web application, add `/health` at the end of the URL as defined by the `@app.route("/health")` in the `app.py` file:
+![image](https://github.com/user-attachments/assets/d6db4b6b-898a-45ff-bc0a-30c219ae7e1e)
 
 
 
