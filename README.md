@@ -464,7 +464,7 @@ The output shown above is the main page for the web app. To check the health of 
 
 ### Connecting Frontend to Backend
 
-Since the frontend files have been deployed to the Azure Blob Storage, and the backend files have been deployed to the Azure App Service, the next step would be to configure both files so that the frontend knows how to communicate with the backend. 
+Since the frontend files have been deployed to the Azure Blob Storage, and the backend files have been deployed to the Azure App Service, the next step would be to configure the frontend files so that it  knows how to communicate with the backend. 
 
 Open Visual Studio Code, then open the `Azure-Multi-Tier-App` repository. Head over to the `frontend` directory and open the `index.html` file. Add the following configurations to the file to ensure that it has the API URL for the Linux Web App:
 ```
@@ -494,7 +494,24 @@ The next step is to configure CORS on the Azure App Service. CORS stands for cro
 To do this, go to the web app in the Azure portal, then to "API" and then to "CORS":
 ![image](https://github.com/user-attachments/assets/72102f0f-4783-4446-a1af-051d34a4fc96)
 
-Add the primary endpoint URL for the frontend static website to the "Allowed Origins" area so that the frontend can fetch data from the backend. Click "Save".
+Add the primary endpoint URL for the frontend static website to the "Allowed Origins" area so that the frontend can fetch data from the backend. Click "Save". This will properly connect the frontend to the backend. 
+
+To verify the connectivity, copy and paste the primary endpoint URL for the frontend static website into the web browser. Once you are on the page, right-click and then select "Inspect" or "Inspect Element". Go to the "Network" tab and refresh it. This will give you the following result:
+
+![image](https://github.com/user-attachments/assets/7e2b9d38-67cb-45a6-9584-df78388d811f)
+
+Click on "health". This will show you that the status code is 200, meaning that the connection is successful. The primary endpoint URL is shown in the "Access-Control-Allow-Origin" under the "Response Headers" section, which verifies that the frontend is allowed to fetch resources from the backend. Under the "Request Headers" section, the host is shown to have the URL for the Linux Web App domain, while the origin is shown to have the primary endpoint URL for the frontend static website:
+
+![image](https://github.com/user-attachments/assets/f84f1185-7337-404b-ba28-7416f3f6bd81)
+
+This verifies that the frontend is properly connected to the backend. 
+
+### Setting Up A SQL Database and Secure Connection
+
+The next step would be to set up an Azure database using Azure MySQL and establish a secure connection between the database and the backend application. This ensures that data is stored and managed by the backend using Azure MySQL, and that only authorised services can access it. 
+
+The Azure MySQL will need to be provisioned using Terraform. 
+
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
