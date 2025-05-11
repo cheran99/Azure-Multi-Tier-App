@@ -483,60 +483,18 @@ Open Visual Studio Code, then open the `Azure-Multi-Tier-App` repository. Head o
 
 Save the file. 
 
-The next step is to integrate Flask-CORS into the `app.py` file. CORS stands for cross-origin resource sharing, and it is a security mechanism that controls how resources can be fetched from different external domains. This prevents unauthorised domains from accessing sensitive information without permissions. In this project, CORS is being integrated into the backend file so that it can be configured to allow the frontend to fetch data from the backend.   
-
-Before adding the Flask-CORS feature to the `app.py`, this Flask-CORS package needs to be installed. To do this, open PowerShell and run the following command:
-```
-pip install Flask-Cors
-```
-
-Next, open the `app.py` file in Visual Studio Code and add the following configurations, and it should look something like this:
-```
-from flask import Flask, render_template
-from flask_cors import CORS 
-import os
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-@app.route("/health")
-def health_check():
-    return "Backend is running"
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    app.run(host="0.0.0.0", port=port)
-```
-
-Save the file. Update the `requirements.txt` to add Flask-CORS along with its version number. It should be `Flask-Cors==5.0.1`. Save the file.
-
 The next step is to redeploy the frontend files to Azure Blob Storage using the following command on PowerShell:
 ```
 az storage blob upload-batch -s "C:\Windows\System32\Azure-Multi-Tier-App\frontend" -d '$web' --account-name multitierstorcheran --overwrite
 ```
 Go to the Azure portal, then to the storage account, and then to the "Static website" page. Once you are on this page, disable and then enable the static website. This will refresh the primary endpoint URL.
 
-On PowerShell, change the directory to the `backend` directory so that this directory is converted to a ZIP file using the following commands:
-```
-cd "Azure-Multi-Tier-App/backend"
-zip -r backend.zip .
-```
+The next step is to configure CORS on the Azure App Service. CORS stands for cross-origin resource sharing, and it is a security mechanism that controls how resources can be fetched from different external domains. This prevents unauthorised domains from accessing sensitive information without permissions. In this project, CORS is being integrated into the Linux Web App so that it can be configured to allow the frontend to fetch data from the backend.  
 
-Move the `backend.zip` file to the main directory. Change the directory to `ansible` on PowerShell using the following command:
-```
-cd ..
-cd ansible
-```
+To do this, go to the web app in the Azure portal, then to "API" and then to "CORS":
+![image](https://github.com/user-attachments/assets/72102f0f-4783-4446-a1af-051d34a4fc96)
 
-Run the `backend_play.yml` playbook using the following `ansible-playbook` command to redeploy the updated backend application:
-```
-ansbile-playbook backend_play.yml
-```
-
+Add the primary endpoint URL for the frontend static website to the "Allowed Origins" area so that the frontend can fetch data from the backend. Click "Save".
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
