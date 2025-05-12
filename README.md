@@ -510,8 +510,37 @@ This verifies that the frontend is properly connected to the backend.
 
 The next step would be to set up an Azure database using Azure MySQL and establish a secure connection between the database and the backend application. This ensures that data is stored and managed by the backend using Azure MySQL, and that only authorised services can access it. 
 
-The Azure MySQL will need to be provisioned using Terraform. 
+The Azure MySQL will need to be provisioned using Terraform. The type of server used for MySQL will be a flexible server over a single server. The reason why the flexible server is chosen is that it has more depth, enhanced storage options, high availability, and better scalability compared to a single server. A flexible server is an essential requirement to run a scalable and reliable multi-tier application.
 
+To provision the Azure MySQL with Terraform, log in to WSL on PowerShell. Then navigate to the `Azure-Multi-Tier-App` repository, and then to the Terraform directory. Once you are in this directory, initialise Terraform using the `terraform init` command. 
+
+On Visual Studio Code, open the `Azure-Multi-Tier-App` repository. Go to the `terraform` directory. Open the `main.tf` file and add the following resources:
+```
+resource "azurerm_mysql_flexible_server" "multi_tier_mysql" {
+  name                   = "multitier-mysql"
+  resource_group_name    = azurerm_resource_group.rg.name
+  location               = azurerm_resource_group.rg.location
+  administrator_login    = random_string.name.result
+  administrator_password = random_password.password.result
+  backup_retention_days  = 7
+}
+
+resource "azurerm_mysql_flexible_server_firewall_rule" "allow_azure_ips" {
+  name                = "allow_azure_ips"
+  resource_group_name = azurerm_resource_group.rg.name
+  server_name         = azurerm_mysql_flexible_server.multi_tier_mysql.name
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
+}
+
+resource "azurerm_mysql_flexible_database" "multi_tier_db" {
+  name                = "multitierdb"
+  resource_group_name = azurerm_resource_group.rg.name
+  server_name         = azurerm_mysql_flexible_server.multi_tier_mysql.name
+  charset             = "utf8"
+  collation           = "utf8_unicode_ci"
+}
+```
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
@@ -552,6 +581,10 @@ The Azure MySQL will need to be provisioned using Terraform.
 - https://www.digitalocean.com/community/tutorials/how-to-use-the-javascript-fetch-api-to-get-data
 - https://medium.com/%40mterrano1/cors-in-a-flask-api-38051388f8cc
 - https://www.geeksforgeeks.org/how-to-install-flask-cors-in-python/
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mysql_flexible_server
+- https://learn.microsoft.com/en-us/azure/mysql/flexible-server/quickstart-create-terraform?tabs=azure-cli
+- https://blobeater.blog/2022/01/19/azure-db-for-mysql-single-server-vs-flexible/#:~:text=Microsoft%20position%20flexible%20server%20as,service%20designed%20for%20minimal%20customization.
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mysql_flexible_server_firewall_rule
 
 
 
