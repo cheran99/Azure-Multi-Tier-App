@@ -633,6 +633,15 @@ To verify that Terraform has created the resources, log in to the Azure portal, 
 
 ![image](https://github.com/user-attachments/assets/61e7536a-fa7c-4c46-af9e-8e5f8fa651b4)
 
+To check if the subnet has been created, go to the `mysql-vnet` virtual network that was created earlier. Once you are on this page, on the left panel, go to "Settings", then to "Subnets". You will see the subnet that was provisioned using Terraform:
+
+![image](https://github.com/user-attachments/assets/339b9c05-6581-47e1-b7d1-d7537ba8a24c)
+
+To verify is the Azure MySQL flexible database has been created, go to the `multitier-mysql` flexible server, then to "Settings" on the left panel, and then to "Databases". You can see that the flexible database has been created:
+
+![image](https://github.com/user-attachments/assets/19aa43eb-4679-416b-a2d8-6f0b2945a95f)
+
+
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
