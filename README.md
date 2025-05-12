@@ -629,6 +629,11 @@ terraform apply
 ```
 When prompted, type "yes" to approve the change. 
 
+To verify that Terraform has created the resources, log in to the Azure portal, then head over to the resource group. You can see that the MySQL flexible server, virtual network, virtual network link, and private DNS zone have been created:
+
+![image](https://github.com/user-attachments/assets/61e7536a-fa7c-4c46-af9e-8e5f8fa651b4)
+
+
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
