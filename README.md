@@ -516,13 +516,74 @@ To provision the Azure MySQL with Terraform, log in to WSL on PowerShell. Then n
 
 On Visual Studio Code, open the `Azure-Multi-Tier-App` repository. Go to the `terraform` directory. Open the `main.tf` file and add the following resources:
 ```
+resource "random_string" "admin_username" {
+  length           = 12
+  special          = false
+}
+
+resource "random_password" "admin_password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "azurerm_virtual_network" "mysql_vnet" {
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.rg.location
+  name                = "mysql-vnet"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_subnet" "mysql_subnet" {
+  name                 = "mysql-subnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.mysql_vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+
+  delegation {
+    name = "mysqlDelegation"
+
+    service_delegation {
+      name    = "Microsoft.DBforMySQL/flexibleServers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+}
+
+resource "azurerm_private_dns_zone" "mysql_private_dns" {
+  name                = "${random_string.admin_username.result}.mysql.database.azure.com"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "mysql_vnet_link" {
+  name                  = "mysqlfsVnetZone${random_string.admin_username.result}.com"
+  private_dns_zone_name = azurerm_private_dns_zone.mysql_private_dns.name
+  virtual_network_id    = azurerm_virtual_network.mysql_vnet.id
+  resource_group_name   = azurerm_resource_group.rg.name
+}
+
 resource "azurerm_mysql_flexible_server" "multi_tier_mysql" {
   name                   = "multitier-mysql"
   resource_group_name    = azurerm_resource_group.rg.name
   location               = azurerm_resource_group.rg.location
-  administrator_login    = random_string.name.result
-  administrator_password = random_password.password.result
+  administrator_login    = random_string.admin_username.result
+  administrator_password = random_password.admin_password.result
   backup_retention_days  = 7
+  delegated_subnet_id    = azurerm_subnet.mysql_subnet.id
+  private_dns_zone_id    = azurerm_private_dns_zone.mysql_private_dns.id
+  sku_name               = "GP_Standard_D2ds_v4"
+  version                = "8.0.21"
+
+  storage {
+    size_gb              = 50
+    auto_grow_enabled    = true
+  }
+
+  high_availability {
+    mode                 = "ZoneRedundant"
+  }
+
+  depends_on = [azurerm_private_dns_zone_virtual_network_link.mysql_vnet_link]
 }
 
 resource "azurerm_mysql_flexible_server_firewall_rule" "allow_azure_ips" {
@@ -537,10 +598,36 @@ resource "azurerm_mysql_flexible_database" "multi_tier_db" {
   name                = "multitierdb"
   resource_group_name = azurerm_resource_group.rg.name
   server_name         = azurerm_mysql_flexible_server.multi_tier_mysql.name
-  charset             = "utf8"
-  collation           = "utf8_unicode_ci"
+  charset             = "utf8mb4"
+  collation           = "utf8mb4_unicode_ci"
 }
 ```
+
+This will not only create a MySQL flexible server and database, but it will also create a virtual network, subnet, and private DNS for extra security. Save the file.
+
+Open the `outputs.tf` file and add the following code:
+```
+output "azurerm_mysql_flexible_server" {
+  value = azurerm_mysql_flexible_server.multi_tier_mysql.name
+}
+
+output "mysql_flexible_server_database_name" {
+  value = azurerm_mysql_flexible_database.multi_tier_db.name
+}
+```
+
+Next, create an execution plan using the following command:
+```
+terraform plan 
+```
+
+This will give a preview of what Terraform plans to create to change the infrastructure.
+
+Next, apply the changes using the following command:
+```
+terraform apply
+```
+When prompted, type "yes" to approve the change. 
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
@@ -585,6 +672,10 @@ resource "azurerm_mysql_flexible_database" "multi_tier_db" {
 - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/quickstart-create-terraform?tabs=azure-cli
 - https://blobeater.blog/2022/01/19/azure-db-for-mysql-single-server-vs-flexible/#:~:text=Microsoft%20position%20flexible%20server%20as,service%20designed%20for%20minimal%20customization.
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mysql_flexible_server_firewall_rule
+- https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
+- https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet
 
 
 
