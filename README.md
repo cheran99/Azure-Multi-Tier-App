@@ -752,6 +752,11 @@ if __name__ == "__main__":
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet
 - https://dev.mysql.com/doc/connector-python/en/quick-installation-guide.html
 - https://www.youtube.com/watch?v=c8r5BLoRAwg
+- https://learn.microsoft.com/en-us/azure/service-connector/how-to-integrate-mysql?tabs=python
+- https://learn.microsoft.com/en-us/azure/app-service/reference-app-settings?tabs=kudu%2Cdotnet
+- https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
+- https://medium.com/@connect.hashblock/creating-an-api-in-flask-with-mysql-a-step-by-step-guide-446f08722057
+- https://medium.com/@connect.hashblock/creating-an-api-in-flask-with-mysql-a-step-by-step-guide-446f08722057
 
 
 
