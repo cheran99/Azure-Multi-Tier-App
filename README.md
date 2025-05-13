@@ -603,7 +603,7 @@ resource "azurerm_mysql_flexible_database" "multi_tier_db" {
 }
 ```
 
-This will not only create a MySQL flexible server and database, but it will also create a virtual network, subnet, and private DNS for extra security. Save the file.
+This will not only create a MySQL flexible server and database, but it will also create a virtual network, firewall, subnet, and private DNS for extra security. Save the file.
 
 Open the `outputs.tf` file and add the following code:
 ```
@@ -640,6 +640,41 @@ To check if the subnet has been created, go to the `mysql-vnet` virtual network 
 To verify is the Azure MySQL flexible database has been created, go to the `multitier-mysql` flexible server, then to "Settings" on the left panel, and then to "Databases". You can see that the flexible database has been created:
 
 ![image](https://github.com/user-attachments/assets/19aa43eb-4679-416b-a2d8-6f0b2945a95f)
+
+### Configuring The Backend To Connect To MySQL
+
+This step involves configuring the backend code so that it connects to the MySQL database. The purpose of this step is to ensure that the backend Flask application serves dynamic responses by performing database operations such as creating, reading, updating, and deleting data. In a multi-tier application, this step is essential to ensure secure communication between the backend and the database. 
+
+Open PowerShell and install the MySQL Connector Python package using the following command:
+```
+pip install mysql-connector
+```
+
+Open Visual Studio Code and head over to the `Azure-Multi-Tier-App` repository, and then to the `backend` directory. Open the `requirements.txt` file and add `mysql-connector` to the list along with its version number. Once you have done this, save the file. 
+
+Next, open the `app.py` file and add the following code:
+```
+from flask import Flask, render_template
+import os
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/health")
+def health_check():
+    return "Backend is running"
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
+```
+
+
+
+
 
 
 
@@ -690,6 +725,8 @@ To verify is the Azure MySQL flexible database has been created, go to the `mult
 - https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet
+- https://dev.mysql.com/doc/connector-python/en/quick-installation-guide.html
+- https://www.youtube.com/watch?v=c8r5BLoRAwg
 
 
 
