@@ -686,7 +686,7 @@ def health_check():
 def get_data():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM your_table_name")  # Change table name
+    cursor.execute("SELECT * FROM your_table_name") 
     data = cursor.fetchall()
     cursor.close()
     conn.close()
