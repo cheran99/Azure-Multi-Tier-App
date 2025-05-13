@@ -656,8 +656,23 @@ Next, open the `app.py` file and add the following code:
 ```
 from flask import Flask, render_template
 import os
+import mysql.connector
 
 app = Flask(__name__)
+
+host = os.getenv('AZURE_MYSQL_HOST')
+user = os.getenv('AZURE_MYSQL_USER')
+password = os.getenv('AZURE_MYSQL_PASSWORD')
+database = os.getenv('Azure_MYSQL_NAME')
+
+def get_db_connection():
+    connection = mysql.connector.connect(
+        user=user,
+        password=password,
+        host=host,
+        database=database
+    )
+    return connection()
 
 @app.route("/")
 def index():
@@ -666,6 +681,16 @@ def index():
 @app.route("/health")
 def health_check():
     return "Backend is running"
+
+@app.route("/data")
+def get_data():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM your_table_name")  # Change table name
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return {"data": data}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
