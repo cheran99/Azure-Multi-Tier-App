@@ -641,6 +641,77 @@ To verify is the Azure MySQL flexible database has been created, go to the `mult
 
 ![image](https://github.com/user-attachments/assets/19aa43eb-4679-416b-a2d8-6f0b2945a95f)
 
+### Creating Tables in Azure Database for MySQL Flexible Server
+
+Now that the MySQL flexible server and database have been created, the next step is to create tables so that the database can store data, the backend application can query and manipulate data, and enable the data to be efficiently structured and organised, which is essential for scaling the app.
+
+Go to the Azure portal, then to `multitier-mysql` flexible server. Go to "Networking". You can see that the server only has private access, meaning that only resources within the same private virtual network or peering virtual networks have access to this MySQL flexible server. Because of this, the local machine or Azure Cloud Shell cannot connect to this server, therefore the tables cannot be created. 
+
+To allow public access, select "Move to Private Link" in the "Networking" tab. A warning will appear and you will be prompted to click "Yes" or "No". Click "Yes". This will take you to the following page:
+
+![image](https://github.com/user-attachments/assets/462250db-4b21-473f-b041-66562b36d590)
+
+Tick the box under "Public access" and then click "Next". This will detach the server from the virtual network and also enable the local machine or Cloud Shell to connect to the server.
+
+Next, open PowerShell and login to WSL using the following command:
+```
+wsl -d Ubuntu
+```
+
+Install the MySQL client using the following commands:
+```
+sudo apt-get update
+sudo apt-get install mysql-client
+```
+
+You can connect to the Azure MySQL flexible server using the following command:
+```
+mysql -h <server address) -P 3306 -u <your username> -p
+```
+
+You will be prompted to enter the administrator password generated earlier with Terraform. 
+
+Once you have successfully connected to the MySQL server, select the MySQL flexible database that was created earlier which is `multitierdb`. Use the following command:
+```
+USE multitierdb;
+```
+
+This will change the database to `multitierdb`. Create a `app_user` table using the following code:
+```
+CREATE TABLE app_user (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+To verify that the table has been created, run the following queries:
+```
+SHOW TABLES;
+DESCRIBE app_user
+```
+
+The output should look something like this:
+```
++---------------+--------------+------+-----+-------------------+-------------------+
+| Field         | Type         | Null | Key | Default           | Extra           
+  |
++---------------+--------------+------+-----+-------------------+-------------------+
+| id            | int          | NO   | PRI | NULL              | auto_increment    |
+| username      | varchar(50)  | NO   | UNI | NULL              |                 
+  |
+| email         | varchar(100) | NO   | UNI | NULL              |                 
+  |
+| password_hash | varchar(255) | NO   |     | NULL              |                 
+  |
+| created_at    | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
++---------------+--------------+------+-----+-------------------+-------------------+
+5 rows in set (0.05 sec)
+```
+
+
 ### Configuring The Backend To Connect To MySQL
 
 This step involves configuring the backend code so that it connects to the MySQL database. The purpose of this step is to ensure that the backend Flask application serves dynamic responses by performing database operations such as creating, reading, updating, and deleting data. In a multi-tier application, this step is essential to ensure secure communication between the backend and the database. 
@@ -654,7 +725,7 @@ Open Visual Studio Code and head over to the `Azure-Multi-Tier-App` repository, 
 
 Next, open the `app.py` file and add the following code:
 ```
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import os
 import mysql.connector
 
@@ -663,16 +734,20 @@ app = Flask(__name__)
 host = os.getenv('AZURE_MYSQL_HOST')
 user = os.getenv('AZURE_MYSQL_USER')
 password = os.getenv('AZURE_MYSQL_PASSWORD')
-database = os.getenv('Azure_MYSQL_NAME')
+database = os.getenv('AZURE_MYSQL_NAME')
 
 def get_db_connection():
-    connection = mysql.connector.connect(
-        user=user,
-        password=password,
-        host=host,
-        database=database
-    )
-    return connection()
+    try:
+        connection = mysql.connector.connect(
+            user=user,
+            password=password,
+            host=host,
+            database=database
+        )
+        return connection()
+    except mysql.connector.Error as err:
+        print(f"Database Connection Error: {err}")
+        return None
 
 @app.route("/")
 def index():
@@ -685,19 +760,27 @@ def health_check():
 @app.route("/data")
 def get_data():
     conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM your_table_name") 
-    data = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return {"data": data}
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM app_user") 
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify({"data": data})
+    else:
+        return jsonify({"error": "Failed to connect to database"}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
 ```
 
+Save the file. On PowerShell, change the directory to the `backend` directory. Once you are in this directory, create the ZIP file using the following command:
+```
+zip -r backend.zip .
+```
 
+Move the ZIP file to the main directory. 
 
 
 
@@ -756,7 +839,10 @@ if __name__ == "__main__":
 - https://learn.microsoft.com/en-us/azure/app-service/reference-app-settings?tabs=kudu%2Cdotnet
 - https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
 - https://medium.com/@connect.hashblock/creating-an-api-in-flask-with-mysql-a-step-by-step-guide-446f08722057
-- https://medium.com/@connect.hashblock/creating-an-api-in-flask-with-mysql-a-step-by-step-guide-446f08722057
+- https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-network-from-private-to-public
+- https://www.geeksforgeeks.org/mysql-create-table/
+- https://www.w3schools.com/mysql/mysql_create_table.asp
+- https://dev.mysql.com/doc/refman/8.4/en/create-table.html
 
 
 
