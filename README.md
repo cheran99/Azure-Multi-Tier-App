@@ -790,7 +790,67 @@ app_settings = {
     AZURE_MYSQL_PASSWORD    = random_password.admin_password.result
     AZURE_MYSQL_NAME        = "multitierdb"
 }
+
+identity {
+    type = "SystemAssigned"  
+}
+
+depends_on = [azurerm_key_vault_secret.mysql_password_secret]
 ```
+
+You will also need to add Azure Key Vault as a resource in Terraform, which is where sensitive information like the MySQL administrator password would be stored. To do this, add the following code in the `main.tf` file:
+```
+data "azurerm_client_config" "current" {}
+
+resource "azurerm_key_vault" "mysql_key_vault" {
+  name                        = "mysql-kv-${random_string.admin_username.result}"
+  location                    = azurerm_resource_group.rg.location
+  resource_group_name         = azurerm_resource_group.rg.name
+  enabled_for_disk_encryption = true
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  soft_delete_retention_days  = 7
+  purge_protection_enabled    = false
+  sku_name                    = "standard"
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+    secret_permissions = ["Get", "List", "Set", "Delete"]
+  }
+}
+
+resource "azurerm_key_vault_secret" "mysql_password_secret" {
+  name         = "mysql-password"
+  value        = random_password.admin_password.result
+  key_vault_id = azurerm_key_vault.mysql_key_vault.id
+}
+
+resource "azurerm_key_vault_access_policy" "app_service_access" {
+  key_vault_id = azurerm_key_vault.mysql_key_vault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_linux_web_app.backend_app.service_plan_id
+  secret_permissions = ["Get"]
+}
+```
+
+On PowerShell, change the directory to the `terraform` directory and run the following commands:
+```
+terraform init
+terraform plan
+terraform apply
+```
+
+This will update and create the resources. To verify its creation, go to the Azure portal, then to the Key vaults directory. You will see that the key vault has successfully been created:
+
+![image](https://github.com/user-attachments/assets/ebb3b1b5-b439-4246-a2b2-4c2f0ba929e6)
+
+To check if the key vault secret has been created, click on the created key vault. Once you are on this key vault page, go to "Objects" and then to "Secrets". You can see that the key vault secret for the MySQL administrator password has successfully been created:
+
+![image](https://github.com/user-attachments/assets/3e055989-d5bb-4bb6-946f-ac59966d282e)
+
+If you want to view the password, click the key vault secret, then click the current version. This will take you to a page where you can view the secret value of the password as shown below:
+
+![image](https://github.com/user-attachments/assets/ab6afd91-a932-474f-9525-5239643ec140)
 
 
 
@@ -851,6 +911,8 @@ app_settings = {
 - https://www.geeksforgeeks.org/mysql-create-table/
 - https://www.w3schools.com/mysql/mysql_create_table.asp
 - https://dev.mysql.com/doc/refman/8.4/en/create-table.html
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
+- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret
 
 
 
