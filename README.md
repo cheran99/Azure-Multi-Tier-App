@@ -782,7 +782,15 @@ zip -r backend.zip .
 
 Move the ZIP file to the main directory. 
 
-
+The next step is to go to the `terraform` directory and open the `main.tf` file. Head over to the "azurerm_linux_web_app" resource block and add the following environmental variables under this resource:
+```
+app_settings = {
+    AZURE_MYSQL_HOST        = "multitier-mysql.mysql.database.azure.com"
+    AZURE_MYSQL_USER        = "NdTgTgkEbY9v@multitier-mysql"
+    AZURE_MYSQL_PASSWORD    = random_password.admin_password.result
+    AZURE_MYSQL_NAME        = "multitierdb"
+}
+```
 
 
 
