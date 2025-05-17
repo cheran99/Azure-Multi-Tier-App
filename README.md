@@ -423,7 +423,7 @@ Create a ZIP file package for the backend file so that the application can be de
 zip -r backend.zip .
 ```
 
-Open Visual Studio Code, and then open the `Azure-Multi-Tier-App` repository. Head over to the `ansible` directory and write the following configurations in the `playbook.yml` file:
+Open Visual Studio Code, and then open the `Azure-Multi-Tier-App` repository. Head over to the `ansible` directory and write the following configurations in the `backend_play.yml` file:
 ```
 - name: Deploy backend to Azure App Service 
   hosts: localhost
@@ -514,11 +514,18 @@ The Azure MySQL will need to be provisioned using Terraform. The type of server 
 
 To provision the Azure MySQL with Terraform, log in to WSL on PowerShell. Then navigate to the `Azure-Multi-Tier-App` repository, and then to the Terraform directory. Once you are in this directory, initialise Terraform using the `terraform init` command. 
 
-On Visual Studio Code, open the `Azure-Multi-Tier-App` repository. Go to the `terraform` directory. Open the `main.tf` file and add the following resources:
+In Visual Studio Code, open the `Azure-Multi-Tier-App` repository. Go to the `terraform` directory. Open the `main.tf` file and add the following resources:
 ```
 resource "random_string" "admin_username" {
   length           = 12
+  upper            = false
+  lower            = true
+  numeric          = true
   special          = false
+}
+
+output "admin_username" {
+  value = "admin_${random_string.admin_username.result}"
 }
 
 resource "random_password" "admin_password" {
@@ -566,24 +573,24 @@ resource "azurerm_mysql_flexible_server" "multi_tier_mysql" {
   name                   = "multitier-mysql"
   resource_group_name    = azurerm_resource_group.rg.name
   location               = azurerm_resource_group.rg.location
-  administrator_login    = random_string.admin_username.result
+  administrator_login    = "admin_${random_string.admin_username.result}"
   administrator_password = random_password.admin_password.result
   backup_retention_days  = 7
   delegated_subnet_id    = azurerm_subnet.mysql_subnet.id
   private_dns_zone_id    = azurerm_private_dns_zone.mysql_private_dns.id
-  sku_name               = "GP_Standard_D2ds_v4"
+  sku_name               = "B_Standard_B1ms"
   version                = "8.0.21"
 
   storage {
-    size_gb              = 50
+    size_gb              = 20
     auto_grow_enabled    = true
   }
 
-  high_availability {
-    mode                 = "ZoneRedundant"
-  }
-
   depends_on = [azurerm_private_dns_zone_virtual_network_link.mysql_vnet_link]
+  
+  lifecycle {
+    ignore_changes = [location, sku_name, backup_retention_days]
+  }
 }
 
 resource "azurerm_mysql_flexible_server_firewall_rule" "allow_azure_ips" {
@@ -613,6 +620,15 @@ output "azurerm_mysql_flexible_server" {
 
 output "mysql_flexible_server_database_name" {
   value = azurerm_mysql_flexible_database.multi_tier_db.name
+}
+
+output "administrator_login" {
+  value = "admin_${random_string.admin_username.result}"
+}
+
+output "administrator_password" {
+  sensitive = true
+  value =  random_password.admin_password.result
 }
 ```
 
@@ -786,7 +802,7 @@ The next step is to go to the `terraform` directory and open the `main.tf` file.
 ```
 app_settings = {
     AZURE_MYSQL_HOST        = "multitier-mysql.mysql.database.azure.com"
-    AZURE_MYSQL_USER        = "NdTgTgkEbY9v@multitier-mysql"
+    AZURE_MYSQL_USER        = "admin_${random_string.admin_username.result}@multitier-mysql"
     AZURE_MYSQL_PASSWORD    = random_password.admin_password.result
     AZURE_MYSQL_NAME        = "multitierdb"
 }
@@ -815,7 +831,7 @@ resource "azurerm_key_vault" "mysql_key_vault" {
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
-    secret_permissions = ["Get", "List", "Set", "Delete"]
+    secret_permissions = ["Get", "List", "Set", "Delete", "Purge"]
   }
 }
 
@@ -825,11 +841,16 @@ resource "azurerm_key_vault_secret" "mysql_password_secret" {
   key_vault_id = azurerm_key_vault.mysql_key_vault.id
 }
 
+data "azurerm_linux_web_app" "backend_app_data" {
+  name                = azurerm_linux_web_app.backend_app.name
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
 resource "azurerm_key_vault_access_policy" "app_service_access" {
   key_vault_id = azurerm_key_vault.mysql_key_vault.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_linux_web_app.backend_app.service_plan_id
-  secret_permissions = ["Get"]
+  object_id    = data.azurerm_linux_web_app.backend_app_data.identity[0].principal_id
+  secret_permissions = ["Get", "List"]
 }
 ```
 
@@ -842,15 +863,25 @@ terraform apply
 
 This will update and create the resources. To verify its creation, go to the Azure portal, then to the Key vaults directory. You will see that the key vault has successfully been created:
 
-![image](https://github.com/user-attachments/assets/ebb3b1b5-b439-4246-a2b2-4c2f0ba929e6)
+![image](https://github.com/user-attachments/assets/ef2f880d-517e-4bce-913e-634da6677eac)
 
 To check if the key vault secret has been created, click on the created key vault. Once you are on this key vault page, go to "Objects" and then to "Secrets". You can see that the key vault secret for the MySQL administrator password has successfully been created:
 
-![image](https://github.com/user-attachments/assets/3e055989-d5bb-4bb6-946f-ac59966d282e)
+![image](https://github.com/user-attachments/assets/e3e377e6-aab9-48a2-9f26-8f70defe9200)
 
 If you want to view the password, click the key vault secret, then click the current version. This will take you to a page where you can view the secret value of the password as shown below:
 
-![image](https://github.com/user-attachments/assets/ab6afd91-a932-474f-9525-5239643ec140)
+![image](https://github.com/user-attachments/assets/dfc67e3a-b366-4412-abe0-69f28b8d5c85)
+
+
+To check if the access policies for the key vault have been created, go to "Access policies" on this key vault page. It should look something like this:
+
+![image](https://github.com/user-attachments/assets/c20943ca-e972-4168-a5b4-c85113a58aed)
+
+
+To check if the environmental variables have been added under the app settings, go to `multitier-backend-app`, then to "Settings", and then to "Environment variables". It should look something like this:
+
+![image](https://github.com/user-attachments/assets/2cb6ab43-91aa-4cb1-a071-8fc64fc8bab7)
 
 
 
