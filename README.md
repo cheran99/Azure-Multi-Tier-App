@@ -734,7 +734,7 @@ This step involves configuring the backend code so that it connects to the MySQL
 
 Open PowerShell and install the MySQL Connector Python package using the following command:
 ```
-pip install mysql-connector
+pip install mysql-connector-python
 ```
 
 Open Visual Studio Code and head over to the `Azure-Multi-Tier-App` repository, and then to the `backend` directory. Open the `requirements.txt` file and add `mysql-connector` to the list along with its version number. Once you have done this, save the file. 
