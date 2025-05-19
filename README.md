@@ -712,16 +712,12 @@ DESCRIBE app_user
 The output should look something like this:
 ```
 +---------------+--------------+------+-----+-------------------+-------------------+
-| Field         | Type         | Null | Key | Default           | Extra           
-  |
+| Field         | Type         | Null | Key | Default           | Extra             |
 +---------------+--------------+------+-----+-------------------+-------------------+
 | id            | int          | NO   | PRI | NULL              | auto_increment    |
-| username      | varchar(50)  | NO   | UNI | NULL              |                 
-  |
-| email         | varchar(100) | NO   | UNI | NULL              |                 
-  |
-| password_hash | varchar(255) | NO   |     | NULL              |                 
-  |
+| username      | varchar(50)  | NO   | UNI | NULL              |                   |
+| email         | varchar(100) | NO   | UNI | NULL              |                   |
+| password_hash | varchar(255) | NO   |     | NULL              |                   |
 | created_at    | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
 +---------------+--------------+------+-----+-------------------+-------------------+
 5 rows in set (0.05 sec)
@@ -791,7 +787,13 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
 ```
 
-Save the file. On PowerShell, change the directory to the `backend` directory. Once you are in this directory, create the ZIP file using the following command:
+Save the file. 
+
+### Configuring The Frontend To Connect To MySQL
+
+
+
+On PowerShell, change the directory to the `backend` directory. Once you are in this directory, create the ZIP file using the following command:
 ```
 zip -r backend.zip .
 ```
