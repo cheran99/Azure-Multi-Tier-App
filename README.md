@@ -696,10 +696,10 @@ This will change the database to `multitierdb`. Create a `app_user` table using 
 ```
 CREATE TABLE app_user (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    name VARCHAR(100),
+    gender VARCHAR(10),
+    age INT,
+    car_brand VARCHAR(100)
 );
 ```
 
@@ -711,16 +711,16 @@ DESCRIBE app_user
 
 The output should look something like this:
 ```
-+---------------+--------------+------+-----+-------------------+-------------------+
-| Field         | Type         | Null | Key | Default           | Extra             |
-+---------------+--------------+------+-----+-------------------+-------------------+
-| id            | int          | NO   | PRI | NULL              | auto_increment    |
-| username      | varchar(50)  | NO   | UNI | NULL              |                   |
-| email         | varchar(100) | NO   | UNI | NULL              |                   |
-| password_hash | varchar(255) | NO   |     | NULL              |                   |
-| created_at    | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-+---------------+--------------+------+-----+-------------------+-------------------+
-5 rows in set (0.05 sec)
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| id        | int          | NO   | PRI | NULL    | auto_increment |
+| name      | varchar(100) | YES  |     | NULL    |                |
+| gender    | varchar(10)  | YES  |     | NULL    |                |
+| age       | int          | YES  |     | NULL    |                |
+| car_brand | varchar(100) | YES  |     | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+5 rows in set (0.06 sec)
 ```
 
 
@@ -804,7 +804,7 @@ The next step is to go to the `terraform` directory and open the `main.tf` file.
 ```
 app_settings = {
     AZURE_MYSQL_HOST        = "multitier-mysql.mysql.database.azure.com"
-    AZURE_MYSQL_USER        = "admin_${random_string.admin_username.result}@multitier-mysql"
+    AZURE_MYSQL_USER        = "admin_${random_string.admin_username.result}"
     AZURE_MYSQL_PASSWORD    = random_password.admin_password.result
     AZURE_MYSQL_NAME        = "multitierdb"
 }
@@ -946,6 +946,7 @@ To check if the environmental variables have been added under the app settings, 
 - https://dev.mysql.com/doc/refman/8.4/en/create-table.html
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret
+- https://www.w3schools.com/sql/sql_insert.asp
 
 
 
