@@ -316,7 +316,7 @@ Once the runtime stack is set, you can save the configuration. The reason why th
 
 ### Configure Backend Application
 
-This step will involve adding a basic Flask backend codeto the `app.py` file so that the Azure App Service has something to run when the backend is deployed.
+This step will involve adding a basic Flask backend code to the `app.py` file so that the Azure App Service has something to run when the backend is deployed.
 
 Before adding content to the `app.py` file, install Flask on the local machine if you haven't already done so. You can do this on the PowerShell using the following command:
 ```
