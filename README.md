@@ -735,9 +735,9 @@ pip install mysql-connector-python
 
 Open Visual Studio Code and head over to the `Azure-Multi-Tier-App` repository, and then to the `backend` directory. Open the `requirements.txt` file and add `mysql-connector` to the list along with its version number. Once you have done this, save the file. 
 
-Next, open the `app.py` file and add the following code:
+Next, open the `app.py` file and add the following codes so it looks something like this:
 ```
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request 
 import os
 import mysql.connector
 
@@ -750,20 +750,52 @@ database = os.getenv('AZURE_MYSQL_NAME')
 
 def get_db_connection():
     try:
-        connection = mysql.connector.connect(
-            user=user,
-            password=password,
-            host=host,
-            database=database
+        cnx = mysql.connector.connect(
+            user=user, 
+            password=password, 
+            host=host, 
+            port=3306, 
+            database=database, 
+            ssl_ca="C:/Windows/System32/Azure-Multi-Tier-App/DigiCertGlobalRootCA.crt.pem",
+            ssl_disabled=False
         )
-        return connection()
+        print("Database connection successful.")
+        return cnx
     except mysql.connector.Error as err:
         print(f"Database Connection Error: {err}")
-        return None
+        return None   
+        
 
-@app.route("/")
+@app.route("/", methods = ['GET', 'POST'])
 def index():
-    return render_template("index.html")
+    conn = get_db_connection()
+    if not conn:
+        return "Database connection failed", 500
+    
+    cursor = conn.cursor()
+    
+
+    if request.method == 'POST':
+        name = request.form['name']
+        gender = request.form['gender']
+        age = request.form['age']
+        car_brand = request.form['car_brand']
+        
+        query = "INSERT INTO app_user (name, gender, age, car_brand) VALUES (%s, %s, %s, %s);"
+        values = (name, gender, age, car_brand)
+        cursor.execute(query, values)
+        conn.commit()
+
+    cursor.execute("SELECT * FROM app_user") 
+    results = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()    
+    return render_template("index.html", results=results)
+
+@app.route("/submit", methods=["POST"])
+def submit():
+    print("Thank you for submitting")
 
 @app.route("/health")
 def health_check():
@@ -772,8 +804,9 @@ def health_check():
 @app.route("/data")
 def get_data():
     conn = get_db_connection()
+    cursor = conn.cursor()
+    
     if conn:
-        cursor = conn.cursor()
         cursor.execute("SELECT * FROM app_user") 
         data = cursor.fetchall()
         cursor.close()
@@ -791,7 +824,170 @@ Save the file.
 
 ### Configuring The Frontend To Connect To MySQL
 
+Since the Flask application involves the user inserting information into the database, the frontend files also needs to be configured to reflect this change. To do this, on Visual Studio Code, go to the `frontend` directory in the `Azure-Multi-Tier-App` repository, open the `index.html` file and add the following code:
+```
+<h2>
+    Enter User Information
+</h2>
 
+<form action="/" method="POST">
+    <label>Name:</label>
+    <input type="text" name="name" required><br>
+  
+    <label>Gender:</label>
+    <select name="gender" required>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select><br>
+  
+    <label>Age:</label>
+    <input type="number" name="age" required><br>
+  
+    <label>Favourite Car Brand:</label>
+    <input type="text" name="car_brand" required><br>
+  
+    <button type="submit">Submit</button>
+</form>
+
+<h3> Submitted Users </h3>
+{% if results %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Age</th>
+        <th>Car Brand</th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>{{ row[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <p>No records found.</p>
+{% endif %}
+</body>
+</html>
+```
+This will display the form for the user to fill in the information, which will then be added to the database. The table will display the information added. Save the file. 
+
+Next, open the `style.css` file and add the following configurations so that the form and table look neat and presentable:
+```
+form {
+    background-color: rgb(31, 220, 226);
+    text-align: center;
+    padding: 20px;
+    margin: 30px auto;
+    margin-top: 5px;
+    width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(17, 17, 17, 0.1);
+}
+
+form button {
+    width: 100px;
+    padding: 10px;
+    background-color: chocolate;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+form input [type='text'] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+form input [type='number'] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #2980b9;
+    color: white;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+h2 {
+    text-align: center;
+    font-style: oblique;
+    font: bolder;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(5, 11, 95);
+}
+
+h3 {
+    text-align: center;
+    font-style: oblique;
+    font: bolder;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(46, 82, 54);
+}
+```
+
+Save the file. Ensure that the `index.html` and `style.css` files in the backend directory also have these new configurations. 
+
+The next step is to redeploy the frontend files to Azure Blob Storage using the following command on PowerShell:
+```
+az storage blob upload-batch -s "C:\Windows\System32\Azure-Multi-Tier-App\frontend" -d '$web' --account-name multitierstorcheran --overwrite
+```
 
 On PowerShell, change the directory to the `backend` directory. Once you are in this directory, create the ZIP file using the following command:
 ```
@@ -799,6 +995,8 @@ zip -r backend.zip .
 ```
 
 Move the ZIP file to the main directory. 
+
+### Provision Azure Key Vault And Add Environmental Variables To The Linux Web App With Terraform
 
 The next step is to go to the `terraform` directory and open the `main.tf` file. Head over to the "azurerm_linux_web_app" resource block and add the following environmental variables under this resource:
 ```
@@ -815,6 +1013,8 @@ identity {
 
 depends_on = [azurerm_key_vault_secret.mysql_password_secret]
 ```
+
+This will ensure that the Linux Web App uses the MySQL server credentials to connect to the database and store the user's data there. 
 
 You will also need to add Azure Key Vault as a resource in Terraform, which is where sensitive information like the MySQL administrator password would be stored. To do this, add the following code in the `main.tf` file:
 ```
@@ -885,7 +1085,13 @@ To check if the environmental variables have been added under the app settings, 
 
 ![image](https://github.com/user-attachments/assets/2cb6ab43-91aa-4cb1-a071-8fc64fc8bab7)
 
+### Redeploying The Updated ZIP File To The Linux Web App Using Ansible
 
+The next step is to change the directory to the `ansible` directory in Powershell and run the playbook using the following command:
+```
+cd ansible
+ansible-playbook backend_play.yml
+```
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
