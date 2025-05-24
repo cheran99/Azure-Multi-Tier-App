@@ -733,7 +733,7 @@ Open PowerShell and install the MySQL Connector Python package using the followi
 pip install mysql-connector-python
 ```
 
-Open Visual Studio Code and head over to the `Azure-Multi-Tier-App` repository, and then to the `backend` directory. Open the `requirements.txt` file and add `mysql-connector` to the list along with its version number. Once you have done this, save the file. 
+Open Visual Studio Code and head over to the `Azure-Multi-Tier-App` repository, and then to the `backend` directory. Open the `requirements.txt` file and add `mysql-connector-python` to the list along with its version number. Once you have done this, save the file. 
 
 Next, open the `app.py` file and add the following codes so it looks something like this:
 ```
@@ -747,6 +747,7 @@ host = os.getenv('AZURE_MYSQL_HOST')
 user = os.getenv('AZURE_MYSQL_USER')
 password = os.getenv('AZURE_MYSQL_PASSWORD')
 database = os.getenv('AZURE_MYSQL_NAME')
+ssl_cert_path = os.path.join(os.path.dirname(__file__), "certs", "DigiCertGlobalRootCA.crt.pem")
 
 def get_db_connection():
     try:
@@ -756,7 +757,7 @@ def get_db_connection():
             host=host, 
             port=3306, 
             database=database, 
-            ssl_ca="C:/Windows/System32/Azure-Multi-Tier-App/DigiCertGlobalRootCA.crt.pem",
+            ssl_ca=ssl_cert_path,
             ssl_disabled=False
         )
         print("Database connection successful.")
@@ -1087,11 +1088,44 @@ To check if the environmental variables have been added under the app settings, 
 
 ### Redeploying The Updated ZIP File To The Linux Web App Using Ansible
 
-The next step is to change the directory to the `ansible` directory in Powershell and run the playbook using the following command:
+Before deploying the `backend.zip` file using Ansible to the Linux Web App, go to the App Service on the Azure Portal, then to "Settings", and then to "Environmental Variables". Click "Add" and add the following application setting, and set the value to 1 or 'True':
+```
+SCM_DO_BUILD_DURING_DEPLOYMENT = 1
+```
+This process will ensure that Oryx will create a virtual environment and install the required packages on the web app whenever a deployment occurs. 
+
+Add the following code in the `backend_play.yml` playbook:
+```
+- name: Set startup command
+      command: >
+        az webapp config set
+        --resource-group multi-tier-rg
+        --name multitier-backend-app
+        --startup-file "python app.py"
+```
+This will ensure that the Flask application starts when the ZIP file is deployed to the web app. 
+
+The next step is to change the directory to the `ansible` directory in the WSL terminal and run the playbook using the following command:
 ```
 cd ansible
 ansible-playbook backend_play.yml
 ```
+
+![image](https://github.com/user-attachments/assets/32d021b5-2193-4961-a8d7-dcbbed004696)
+
+The output shows that the web app deployment has been successful.
+
+To see if the web app is working with the new backend code deployed, go to the `multitier-backend-app` web app on the Azure portal, and click on the default domain link to see the output. The output should look something like this:
+![image](https://github.com/user-attachments/assets/5f465893-c31f-419f-a0d6-172a4c25c5c8)
+
+Now to check if the form on the application is working and and adding the entered information to the table, you can add more user information just to play around with it and see the results:
+
+![image](https://github.com/user-attachments/assets/55e03552-96ac-4d3e-85ff-d6d93deead4b)
+
+As shown above, the form is working and the data is stored in the table below. 
+
+
+
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
