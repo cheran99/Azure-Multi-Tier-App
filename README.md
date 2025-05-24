@@ -1124,7 +1124,24 @@ Now to check if the form on the application is working and and adding the entere
 
 As shown above, the form is working and the data is stored in the table below. 
 
+To verify that the input data has successfully been stored in the MySQL flexible server, log in to the server using the following command:
+```
+mysql -h <server address) -P 3306 -u <your username> -p
+```
 
+When prompted, enter the administrator password. 
+
+Once you are logged in, run the following SQL query to view the new data:
+```
+USE multitierdb;
+SELECT * FROM app_user;
+```
+
+The output should look something like this:
+
+![image](https://github.com/user-attachments/assets/864db535-f0dc-4f9e-8f24-1edf8b784d79)
+
+This shows that the data entered by the user from the web app has successfully been stored in the specific database on the MySQL flexible server. 
 
 
 ## References
