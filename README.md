@@ -1204,6 +1204,8 @@ This shows that the data entered by the user from the web app has successfully b
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
 - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret
 - https://www.w3schools.com/sql/sql_insert.asp
+- https://learn.microsoft.com/en-us/azure/app-service/configure-language-python#troubleshooting
+- https://learn.microsoft.com/en-us/answers/questions/783609/while-hosting-webapp-in-azure-i-am-getting-this-er
 
 
 
