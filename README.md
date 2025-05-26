@@ -1155,6 +1155,12 @@ Ensure that the private endpoint is under the same `multi-tier-rg` resource grou
 
 ![image](https://github.com/user-attachments/assets/e84c86b8-d750-4890-86b7-3ab278444d79)
 
+Once the private endpoint has been deployed, go to the `multitier` private endpoint page, then to "Settings", and then to "DNS Configuration". Click "Add configuration" and select the private DNS zone that was provisioned earlier with Terraform, and click "Add":
+
+![image](https://github.com/user-attachments/assets/69319494-9b3e-4fee-a157-30f4076779c9)
+
+The private DNS zone chosen is the one that is linked with the virtual network as defined by Terraform.
+
 
 
 ## References
