@@ -1143,6 +1143,19 @@ The output should look something like this:
 
 This shows that the data entered by the user from the web app has successfully been stored in the specific database on the MySQL flexible server. 
 
+### Securing The Architecture Of The Multi-Tier Application 
+
+Remember when the MySQL flexible server was changed to public access earlier, so it was easier to connect to the server, create and destroy tables, and view the data stored in them in the database? Well, the MySQL flexible server will now be changed back to private access to ensure that the risk of unauthorised access or attacks is significantly reduced, and only resources within the Azure Virtual Network have access to the server, enhancing security in the process. 
+
+On the Azure portal, go to the MySQL flexible server, which is `multitier-mysql`. Once you are on this page, go to "Settings", then to "Networking". At the bottom of the "Networking" page, click "Create private endpoint".
+
+![image](https://github.com/user-attachments/assets/1aac54eb-66c4-4403-92fe-b588060c0c75)
+
+Ensure that the private endpoint is under the same `multi-tier-rg` resource group, and also the same region as the other resources, such as the virtual network. Click "Next", and when you reach the "Virtual Network" page, select the virtual network and subnet that was provisioned earlier with Terraform. Leave everything else to its default and continuously click "Next" until you reach the page where it shows the outputs for the private endpoint, such as the basics, resource, virtual network, and DNS. If you are happy with the outputs, click "Create", and the private endpoint will be created. 
+
+![image](https://github.com/user-attachments/assets/e84c86b8-d750-4890-86b7-3ab278444d79)
+
+
 
 ## References
 - https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
