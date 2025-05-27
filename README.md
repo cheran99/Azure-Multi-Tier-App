@@ -1159,7 +1159,17 @@ Once the private endpoint has been deployed, go to the `multitier` private endpo
 
 ![image](https://github.com/user-attachments/assets/69319494-9b3e-4fee-a157-30f4076779c9)
 
-The private DNS zone chosen is the one that is linked with the virtual network as defined by Terraform.
+The chosen private DNS zone is linked to the virtual network as defined by Terraform.
+
+Go to the `mysql-vnet` virtual network page, and then to "Subnets". Create a new subnet for the App Service to enable outbound connections to the MySQL flexible server. Name this subnet `backend-subnet`. Keep every other configuration to its default and click "Add":
+
+![image](https://github.com/user-attachments/assets/46ad148e-e1c6-451c-a7f6-9efc2096e395)
+
+Next, go to the `multitier-backend-app` web app page, and then to the "Networking" page. On the "Outbound traffic configuration" section, configure the virtual network integration. Select the `mysql-vnet` virtual network as well as the `backend-subnet` and click "Connect":
+
+![image](https://github.com/user-attachments/assets/a6317091-4be9-40f7-8764-aee5159ee168)
+
+This will connect the App Service to the same virtual network as the MySQL flexible server. 
 
 
 
