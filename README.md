@@ -1190,7 +1190,117 @@ If you try connecting to the server using PowerShell or the MySQL Workbench appl
 
 As a result, the MySQL flexible server is now secure from public exposure. 
 
-The only way that you can privately access the server is through a virtual machine that is part of the same virtual netowrk as the server. 
+The only way that you can privately access the server is through a virtual machine that is part of the same virtual network as the server.
+
+### Restricting The Table View By Adding An Authorisation Layer In The Linux Web App
+
+Since the table shown on the main page of the web app is on public display, the next step will involve adding an authentication layer over it so that only authorised users can view it. This step is important because the table may contain sensitive information therefore it is appropriate to add a secure layer as it complies with data regulations and enhances defense in depth. 
+
+In Visual Studio Code, open the `app.py` file in the `Azure-Multi-Tier-App` repository and update the file so it should look something like this:
+```
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for
+import os
+import mysql.connector
+
+app = Flask(__name__)
+
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+host = os.getenv('AZURE_MYSQL_HOST')
+user = os.getenv('AZURE_MYSQL_USER')
+password = os.getenv('AZURE_MYSQL_PASSWORD')
+database = os.getenv('AZURE_MYSQL_NAME')
+ssl_cert_path = os.path.join(os.path.dirname(__file__), "certs", "DigiCertGlobalRootCA.crt.pem")
+
+admin_user = user
+admin_password = password
+
+def get_db_connection():
+    try:
+        cnx = mysql.connector.connect(
+            user=user, 
+            password=password, 
+            host=host, 
+            port=3306, 
+            database=database, 
+            ssl_ca=ssl_cert_path,
+            ssl_disabled=False
+        )
+        print("Database connection successful.")
+        return cnx
+    except mysql.connector.Error as err:
+        print(f"Database Connection Error: {err}")
+        return None   
+        
+
+@app.route("/", methods = ['GET', 'POST'])
+def index():
+    conn = get_db_connection()
+    if not conn:
+        return "Database connection failed", 500
+    
+    cursor = conn.cursor()
+    
+
+    if request.method == 'POST':
+        name = request.form['name']
+        gender = request.form['gender']
+        age = request.form['age']
+        car_brand = request.form['car_brand']
+        
+        query = "INSERT INTO app_user (name, gender, age, car_brand) VALUES (%s, %s, %s, %s);"
+        values = (name, gender, age, car_brand)
+        cursor.execute(query, values)
+        conn.commit()
+
+    cursor.execute("SELECT * FROM app_user") 
+    results = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()    
+    return render_template("index.html", results=results)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        admin
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return '''
+        <form method="post">
+            <p><input type=text name=username>
+            <p><input type=submit value=Login>
+        </form>
+    '''
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+@app.route("/health")
+def health_check():
+    return "Backend is running"
+
+@app.route("/data")
+def get_data():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    if conn:
+        cursor.execute("SELECT * FROM app_user") 
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify({"data": data})
+    else:
+        return jsonify({"error": "Failed to connect to database"}), 500
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
+```
 
 
 
