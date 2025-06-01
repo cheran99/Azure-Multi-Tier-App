@@ -1143,11 +1143,16 @@ The output should look something like this:
 
 This shows that the data entered by the user from the web app has successfully been stored in the specific database on the MySQL flexible server. 
 
+If you add `/data` at the end of the URL for the web app domain, that will show you the data entered by the user:
+
+![image](https://github.com/user-attachments/assets/1d808548-ad28-4aa6-80db-350535e0873f)
+
+
 ### Securing The Architecture Of The Multi-Tier Application 
 
 Remember when the MySQL flexible server was changed to public access earlier, so it was easier to connect to the server, create and destroy tables, and view the data stored in them in the database? Well, the MySQL flexible server will now be changed back to private access to ensure that the risk of unauthorised access or attacks is significantly reduced, and only resources within the Azure Virtual Network have access to the server, enhancing security in the process. 
 
-On the Azure portal, go to the MySQL flexible server, which is `multitier-mysql`. Once you are on this page, go to "Settings", then to "Networking". At the bottom of the "Networking" page, click "Create private endpoint".
+On the Azure portal, go to the MySQL flexible server, which is `multitier-mysql`. Once you are on this page, go to "Settings", then to "Networking". Disable public access by unticking the box and click "Save". At the bottom of the "Networking" page, click "Create private endpoint".
 
 ![image](https://github.com/user-attachments/assets/1aac54eb-66c4-4403-92fe-b588060c0c75)
 
@@ -1170,6 +1175,23 @@ Next, go to the `multitier-backend-app` web app page, and then to the "Networkin
 ![image](https://github.com/user-attachments/assets/a6317091-4be9-40f7-8764-aee5159ee168)
 
 This will connect the App Service to the same virtual network as the MySQL flexible server. 
+
+Now let's access the domain for the Linux Web App. As shown below, the web app is successfully working:
+
+![image](https://github.com/user-attachments/assets/d8d70f83-82bc-445c-83c6-d73b4179a727)
+
+This shows that the web app can successfully connect to the MySQL flexible server even with public access disabled because both the App Service and MySQL server are part of the same virtual network. 
+
+If you try connecting to the server using PowerShell or the MySQL Workbench application from your local machine, it gives an error message:
+
+![image](https://github.com/user-attachments/assets/273d1606-ffaf-41ba-aa89-03dda14db4d4)
+
+![image](https://github.com/user-attachments/assets/2f988bd1-74b9-4873-abe6-4cd20e66ca56)
+
+As a result, the MySQL flexible server is now secure from public exposure. 
+
+The only way that you can privately access the server is through a virtual machine that is part of the same virtual netowrk as the server. 
+
 
 
 
