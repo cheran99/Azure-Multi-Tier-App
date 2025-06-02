@@ -1199,15 +1199,12 @@ Since the table shown on the main page of the web app is on public display, the 
 In Visual Studio Code, open the `app.py` file in the `Azure-Multi-Tier-App` repository and update the file so it should look something like this:
 ```
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
-from flask_login import LoginManager
 import os
 import mysql.connector
 
 app = Flask(__name__)
 
-login_manager.init_app(app)
-
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.secret_key = 'thisisasecretkey'
 
 host = os.getenv('AZURE_MYSQL_HOST')
 user = os.getenv('AZURE_MYSQL_USER')
@@ -1268,33 +1265,31 @@ def login():
     if request.method == 'POST':
         admin = request.form['admin']
         password = request.form['password']
-        if admin and password == admin_user and admin_password:
+        if admin == admin_user and password == admin_password:
             session['admin'] = request.form['admin']
             return redirect(url_for('dashboard'))
         return "Invalid credentials", 401
-    return '''
-        <form method="post">
-            Admin:<input name=`admin`>
-            Password:<input type=`password`>
-            <p><input type=submit value=Login>
-        </form>
-    '''
-    return render_template("login.html", form=form)
+
+    return render_template("login.html")
 
 @app.route('/dashboard')
-@login_required
 def dashboard():
-    if admin not in session:
+    if 'admin' not in session:
         return redirect(url_for('login'))
 
-    if session.get('admin') == user:
+    if session.get('admin') == admin_user:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM app_user") 
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
         return render_template("dashboard.html", data=data)
     else:
         return "Access denied: Admins only", 403
 
 
 @app.route('/logout')
-@login_required
 def logout():
     session.pop('admin', None)
     return redirect(url_for('index'))
