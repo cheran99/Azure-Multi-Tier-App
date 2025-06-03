@@ -1538,6 +1538,15 @@ Run the `backend_play.yml` playbook using the following command:
 ```
 ansible-playbook backend_play.yml
 ```
+![image](https://github.com/user-attachments/assets/881a7f2b-9229-44f1-9992-8138070ee84d)
+
+The output shown above shows that the ZIP file has successfully been deployed into the App Service.
+
+To check if the Linux web app is working, go to the `multitier-backend-app` web app on the Azure portal and click the default domain:
+
+https://github.com/user-attachments/assets/ed7704e7-63eb-4ae2-9a9c-8e4b90e6fada
+
+As shown in the video above, the web app is successfully working.
 
 
 
