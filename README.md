@@ -10,12 +10,13 @@ Organisations that rely on monolithic systems tend to struggle with scalability,
 - Use Terraform and Ansible to automate infrastructure and provisioning, ensuring repeatable, scalable, and secure deployments.
 
 ### Tech Stack
-- Azure VM (Linux, B1s Free Tier)
+- Azure App Service (Linux Web App)
 - Azure Blob Storage (Static Website Hosting + Backups)
 - Flask (Python Web Framework)
 - MySQL (Local on VM)
 - Terraform (Infrastructure as Code)
-- Ansible (Provisioning and Setup)
+- Ansible (Automation and Deployment)
+- Windows Subsystem for Linux (WSL)
 - Visual Studio Code 
 
 ## Deployment Guide
