@@ -1382,6 +1382,10 @@ if __name__ == "__main__":
 - https://www.w3schools.com/sql/sql_insert.asp
 - https://learn.microsoft.com/en-us/azure/app-service/configure-language-python#troubleshooting
 - https://learn.microsoft.com/en-us/answers/questions/783609/while-hosting-webapp-in-azure-i-am-getting-this-er
+- https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
+- https://flask-login.readthedocs.io/en/latest/
+- https://flask.palletsprojects.com/en/latest/quickstart/#sessions
+- https://www.geeksforgeeks.org/login-and-registration-project-using-flask-and-mysql/
 
 
 
