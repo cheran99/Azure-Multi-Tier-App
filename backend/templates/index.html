@@ -1,11 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Multi-tier App</title>
-<link rel="stylesheet" href="../static/style.css">
+    <title>Multi-tier App</title>
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-<h1>Welcome to the Multi-tier Web Application</h1>
-<p>This is a static frontend served from the Azure Blob Storage.</p>
+    <header>
+        <nav>
+            {% if 'admin' in session %}
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Administrator Login</a>
+            {% endif %}
+        </nav>
+    </header>
+    <h1>Welcome to the Multi-tier Web Application</h1>
+    <p>This is a static frontend served from the Azure Blob Storage.</p>
+    <script>
+        fetch("https://multitier-backend-app.azurewebsites.net/health")
+            .then(response => response.text())
+            .then(data => { 
+                document.getElementById("api-response").innerText = data
+            })
+            .catch(error => {
+                console.error("Backend failed to run", error);
+                document.getElementById("api-response").innerText = "Unable to connect to backend.";
+            });
+    </script>
+
+    <h2>
+        Enter User Information
+    </h2>
+
+    <form action="/" method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" required><br>
+  
+        <label>Gender:</label>
+        <select name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select><br>
+  
+        <label>Age:</label>
+        <input type="number" name="age" required><br>
+  
+        <label>Favourite Car Brand:</label>
+        <input type="text" name="car_brand" required><br>
+  
+        <button type="submit">Submit</button>
+    </form>
+
 </body>
 </html>

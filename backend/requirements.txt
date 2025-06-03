@@ -1,2 +1,6 @@
 Flask==3.0.2
 Werkzeug==3.0.1
+Flask-CORS==5.0.1
+Gunicorn==23.0.0
+mysql-connector-python==9.3.0
+openssl-python==0.1.1

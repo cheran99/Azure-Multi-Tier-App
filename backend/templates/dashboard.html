@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Multi-tier App Dashboard</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <h1> Welcome To The Dashboard </h1>
+    {% if results %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Car Brand</th>
+        </tr>
+        {% for row in results %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>No records found.</p>
+    {% endif %}
+</body>
+
+</html>
