@@ -1262,19 +1262,29 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    msg = ''
+    if request.method == 'POST' and 'admin' in request.form and 'password' in request.form:
+        print("Login form submitted.")
+        print("Form data:", request.form)
+
         admin = request.form['admin']
         password = request.form['password']
+
+        print(f"Admin input: {admin}")
+        print(f"Password input: {password}")
+
         if admin == admin_user and password == admin_password:
-            session['admin'] = request.form['admin']
+            session['admin'] = admin
+            print("Login successful!")
             return redirect(url_for('dashboard'))
-        return "Invalid credentials", 401
+        else:
+            msg = "Invalid credentials"
+            print("Login failed.")
+    return render_template("login.html", msg = msg)
 
-    return render_template("login.html")
-
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    if 'admin' not in session:
+    if session.get('admin') != admin_user:
         return redirect(url_for('login'))
 
     if session.get('admin') == admin_user:
@@ -1284,7 +1294,7 @@ def dashboard():
         data = cursor.fetchall()
         cursor.close()
         conn.close()
-        return render_template("dashboard.html", data=data)
+        return render_template("dashboard.html", results=data)
     else:
         return "Access denied: Admins only", 403
 
@@ -1300,10 +1310,12 @@ def health_check():
 
 @app.route("/data")
 def get_data():
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    if session.get('admin') != admin_user:
+        return redirect(url_for('login'))
     
-    if conn:
+    if session.get('admin') == admin_user:
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute("SELECT * FROM app_user") 
         data = cursor.fetchall()
         cursor.close()
@@ -1317,7 +1329,164 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
 ```
 
+This will keep the table hidden from public view. The table for the data stored will be in the dashboard page as defined by the `@app.route(/dashboard)`. However, to access this page, logging in using the authorised credentials is required. Without it, if you add `/dashboard` at the end of the URL, it will automatically redirect you to the login page. The same applies if you add `/data` at the end of the URL. The `admin_user` and `admin_password` define the credentials that should be used to log in and grant access to the dashboard and data itself. If the user uses the wrong credentials, it won't log them in, therefore, they won't have access to the dashboard. 
 
+In order to reflect the changes made to the Flask application, create two HTML files inside the `templates` folder in the `backend` directory. These two files should be `login.html` and `dashboard.html` as defined by the app routes in the Flask application.  Remove the code that defines the table in the `index.html` file and paste it into the `dashboard.html` file. The `dashboard.html` file should look something like this:
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Multi-tier App Dashboard</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <h1> Welcome To The Dashboard </h1>
+    {% if results %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Car Brand</th>
+        </tr>
+        {% for row in results %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>No records found.</p>
+    {% endif %}
+</body>
+
+</html>
+```
+
+The `nav` bar in the header shows the links that can take you back to the home page even when logged in, therefore, you can return to the dashboard from the index/home page without having to log back in as long as the user is in session. There is also a logout link, which will log out of the session and redirect you to the index page; however, this time, you are required to log in again in order to access the dashboard and data. 
+
+The `login.html` file should look something like this:
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Multi-tier App Administrator Login</title>
+<link rel="stylesheet" href="../static/style.css">
+<body>
+    <header>
+        <nav>
+                <a href="{{ url_for('index') }}">Home</a>
+        </nav>
+    </header>
+
+    <h1>Administrator Login</h1>
+
+    {% if msg %}
+        <p style="color: red;">{{ msg }}</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('login') }}">
+        <label>Admin:</label>
+        <input type="text" name="admin" required><br>
+
+        <label>Password:</label>
+        <input type="password" name="password" required><br>
+        
+        <input type=submit value="Login">
+    </form>
+</body>
+</html>
+```
+
+This will be the login page where you insert the correct credentials to access the dashboard.
+
+The `index.html` page should look something like this:
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Multi-tier App</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            {% if 'admin' in session %}
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Administrator Login</a>
+            {% endif %}
+        </nav>
+    </header>
+    <h1>Welcome to the Multi-tier Web Application</h1>
+    <p>This is a static frontend served from the Azure Blob Storage.</p>
+    <script>
+        fetch("https://multitier-backend-app.azurewebsites.net/health")
+            .then(response => response.text())
+            .then(data => { 
+                document.getElementById("api-response").innerText = data
+            })
+            .catch(error => {
+                console.error("Backend failed to run", error);
+                document.getElementById("api-response").innerText = "Unable to connect to backend.";
+            });
+    </script>
+
+    <h2>
+        Enter User Information
+    </h2>
+
+    <form action="/" method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" required><br>
+  
+        <label>Gender:</label>
+        <select name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select><br>
+  
+        <label>Age:</label>
+        <input type="number" name="age" required><br>
+  
+        <label>Favourite Car Brand:</label>
+        <input type="text" name="car_brand" required><br>
+  
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
+```
+
+The only thing that will remain on this page is the welcome message, as well as the form for the user to fill in information which is then added to the `multitierdb` database. The `nav` bar in the header shows the link to the login page. If the user is already logged in, it will show the link to the dashboard as well as a link to log out.
+
+This is the output for `index.html` page:
+
+![image](https://github.com/user-attachments/assets/cb1caa5c-d5c4-44de-bdf4-69d1bf306bce)
+
+Here is the output for the `login.html` file:
+
+![image](https://github.com/user-attachments/assets/2628203d-5c5b-4e2a-bee2-8917380b4203)
+
+And here is the output for the `dashboard.html` file:
+
+![image](https://github.com/user-attachments/assets/71f4207b-e26e-4d5a-bb02-d408d42d885f)
 
 
 ## References
@@ -1386,6 +1555,7 @@ if __name__ == "__main__":
 - https://flask-login.readthedocs.io/en/latest/
 - https://flask.palletsprojects.com/en/latest/quickstart/#sessions
 - https://www.geeksforgeeks.org/login-and-registration-project-using-flask-and-mysql/
+- https://www.youtube.com/watch?v=71EU8gnZqZQ
 
 
 
