@@ -1474,7 +1474,7 @@ The `index.html` page should look something like this:
 </html>
 ```
 
-The only thing that will remain on this page is the welcome message, as well as the form for the user to fill in information which is then added to the `multitierdb` database. The `nav` bar in the header shows the link to the login page. If the user is already logged in, it will show the link to the dashboard as well as a link to log out.
+The only thing that will remain on this page is the welcome message, as well as the form for the user to fill in information, which is then added to the `multitierdb` database. The `nav` bar in the header shows the link to the login page. If the user is already logged in, it will show the link to the dashboard as well as a link to log out.
 
 This is the output for `index.html` page:
 
@@ -1487,6 +1487,58 @@ Here is the output for the `login.html` file:
 And here is the output for the `dashboard.html` file:
 
 ![image](https://github.com/user-attachments/assets/71f4207b-e26e-4d5a-bb02-d408d42d885f)
+
+To test if the Flask application is working, run the following commands in the WSL terminal. Ensure that you are within the `Azure-Multi-Tier-App` directory:
+```
+source venv/bin/activate
+cd backend
+
+export AZURE_MYSQL_HOST=multitier-mysql.mysql.database.azure.com
+export AZURE_MYSQL_NAME=multitierdb
+export AZURE_MYSQL_USER=<username>
+export AZURE_MYSQL_PASSWORD=<password>
+
+python3 app.py
+```
+
+This will give the following outputs:
+1. Index/Home page:
+
+   ![image](https://github.com/user-attachments/assets/c109a25a-e092-4020-890b-75da4e2bf9e1)
+   - When you click "Administrator Login" in the top corner, it will take you to the login page.
+3. Login page:
+
+   ![image](https://github.com/user-attachments/assets/3eb9786c-3114-4466-93f0-b9912e803878)
+   - When you click "Login" after filling in the correct credentials, this will take you to the dashboard page, otherwise, it will give you a message that says "Invalid Credentials" if you put the wrong credentials:
+     ![image](https://github.com/user-attachments/assets/af489700-5269-426e-b50a-de18bb176a64)
+
+5. Dashboard page:
+
+   ![image](https://github.com/user-attachments/assets/de18855f-ef9e-41ad-8e47-07a5e39bdc69)
+   - Since you are already logged in with the correct credentials, you can return to the home page by clicking "Home" in the top right corner.
+
+7. Home page while logged in:
+
+   ![image](https://github.com/user-attachments/assets/bb34337e-c747-45e2-bbfd-5bef3e54584b)
+   - You can still fill in the form with information on the main page and submit it, and head over to the dashboard page to see the results as long as you are logged in. Otherwise, you can click "Logout", and it will log you out; therefore, you won't be able to view the data that was submitted unless you log in again using the correct credentials.
+
+The outputs show that the app is successfully working. The next step will be to convert this `backend` to a ZIP file for deployment using the following commands in the WSL terminal:
+```
+cd backend
+zip -r backend.zip .
+```
+
+Move the ZIP file to the main `Azure-Multi-Tier-App` directory. In the same WSL terminal, change the directory to `ansible` and run the following commands:
+```
+cd ..
+cd ansible
+```
+
+Run the `backend_play.yml` playbook using the following command:
+```
+ansible-playbook backend_play.yml
+```
+
 
 
 ## References
