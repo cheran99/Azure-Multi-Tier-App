@@ -9,3 +9,11 @@
         --resource-group multi-tier-rg
         --name multitier-backend-app
         --src-path "C:/Windows/System32/Azure-Multi-Tier-App/backend.zip"
+        --type zip
+    
+    - name: Set startup command
+      command: >
+        az webapp config set
+        --resource-group multi-tier-rg
+        --name multitier-backend-app
+        --startup-file "python app.py"
