@@ -1549,6 +1549,44 @@ https://github.com/user-attachments/assets/ed7704e7-63eb-4ae2-9a9c-8e4b90e6fada
 
 As shown in the video above, the web app is successfully working.
 
+### Destroy The Entire Infrastructure (Optional)
+
+Since the secure multi-tier application has successfully been deployed with the MySQL flexible server only having private access, and the dashboard that includes user information in the web app only requiring administrator access, this step involves destroying the entire infrastructure to avoid unnecessary charges. However, this step is optional, and you can destroy the infrastructure if you are only doing this for learning purposes; otherwise, if you intend to run the web application in the long run, then there is no need to destroy the infrastructure. 
+
+In the WSL terminal, ensure that you are in the `Azure-Multi-Tier-App` repository and change the repository to the `terraform` directory. Once you are in this directory, run the following commands:
+```
+terraform init
+terraform destroy
+```
+
+This will destroy the entire infrastructure.
+
+## Critical Reflection
+
+This project involved creating a secure multi-tier application with Microsoft Azure. The key components include the following:
+- Infrastructure:
+  - Resource group (`multi-tier-rg`)
+  - MySQL Flexible Server (`multitier-mysql`) with private access 
+  - MySQL Flexible Server database (`multitierdb`)
+  - Virtual network (`mysql-vnet`) with subnets
+  - Storage account (`multistorcheran`)
+  - Access Control: Only Azure resources within the same virtual network can access the database with the correct credentials
+- Application Stack:
+  - Backend: Flask (`app.py`)
+  - Frontend: `index.html`,`login.html`, `dashboard.html`, and `style.css`
+  - Admin authentication: The user information in the dashboard can only be accessed using the correct MySQL credentials, and in addition, public registration is disabled, enabling the stored data to be safe and secure
+
+
+In addition to successfully building a secure multi-tier application, I have also learned and applied some key skills along the way, such as:
+- Provisioning a secure infrastructure with Terraform
+- Automating deployment and configuration with Ansible
+- Building backend functionality with Python (Flask)
+- Designing simple user interfaces (UI) with HTML/CSS
+- Connecting the web application to the MySQL flexible server and database
+- Creating queries in the MySQL database
+
+
+
 
 
 ## References
