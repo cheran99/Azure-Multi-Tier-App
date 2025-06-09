@@ -1585,77 +1585,94 @@ In addition to successfully building a secure multi-tier application, I have als
 - Connecting the web application to the MySQL flexible server and database
 - Creating queries in the MySQL database
 
+## Conclusions
 
+This project successfully demonstrated the development and deployment of a secure multi-tier application hosted on Microsoft Azure. I created a functioning and secure end-to-end solution by provisioning and integrating the infrastructure with Terraform, automating and configuring deployments with Ansible, frontend design, and backend development. 
+
+As a result of developing a multi-tier application on Azure, I deepened my practical knowledge on:
+- Cloud security and private networking
+- Infrastructure as Code with Terraform
+- Automation with Ansible
+- Backend and frontend development using Python (Flask), HTML, and CSS
+- Secure credential management
+
+This type of application can be used for:
+- Customer or user data collection platforms
+- Internal business applications, such as a basic CRM tool
+- Surveys and research data
+- Basic inventory
+
+This entire experience has increased my confidence in deploying cloud-based applications, which will bring significant value to cloud, DevOps, and DevSecOps environments. 
 
 
 
 ## References
-- https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli
-- https://developer.hashicorp.com/terraform/cli/run
-- https://developer.hashicorp.com/terraform/cli
-- https://developer.hashicorp.com/terraform/cli/commands/plan
-- https://spacelift.io/blog/terraform-tutorial
-- https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website
-- https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-how-to?tabs=azure-portal#upload-files
-- https://www.browserstack.com/guide/build-a-website-using-html-css
-- https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-host
-- https://learn.microsoft.com/en-us/azure/app-service/provision-resource-terraform
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service.html
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_web_app
-- https://galaxy.ansible.com/ui/repo/published/azure/azcollection/
-- https://learn.microsoft.com/en-us/azure/developer/ansible/install-on-linux-vm?tabs=azure-cli#install-ansible-on-an-azure-linux-virtual-machine
-- https://learn.microsoft.com/en-us/cli/azure/azure-cli-sp-tutorial-1?wt.mc_id=searchAPI_azureportal_inproduct_rmskilling&sessionId=cbce6ec3338248c0be2c8463c754def8&tabs=powershell
-- https://learn.microsoft.com/en-us/azure/developer/ansible/azure-web-apps-configure
-- https://docs.ansible.com/ansible/latest/collections/azure/azcollection/index.html#plugin-index
-- https://www.tutorialspoint.com/yaml/yaml_scalars_and_tags.htm#:~:text=YAML%20flow%20scalars%20include%20plain,always%20folded%20in%20this%20structure.
-- https://learn.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
-- https://spacelift.io/blog/ansible-variables
-- https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
-- https://flask.palletsprojects.com/en/stable/installation/
-- https://flask.palletsprojects.com/en/latest/quickstart/#a-minimal-application
-- https://www.geeksforgeeks.org/flask-rendering-templates/
-- https://github.com/Azure-Samples/python-docs-hello-world/blob/master/app.py
-- https://realpython.com/python-web-applications/
-- https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip
-- https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_webapp_module.html#ansible-collections-azure-azcollection-azure-rm-webapp-module
-- https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_appserviceplan_module.html#ansible-collections-azure-azcollection-azure-rm-appserviceplan-module
-- https://www.youtube.com/watch?v=ujiJaz2bRII
-- https://medium.com/swlh/making-use-of-apis-in-your-front-end-c168e343bea3
-- https://www.digitalocean.com/community/tutorials/how-to-use-the-javascript-fetch-api-to-get-data
-- https://medium.com/%40mterrano1/cors-in-a-flask-api-38051388f8cc
-- https://www.geeksforgeeks.org/how-to-install-flask-cors-in-python/
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mysql_flexible_server
-- https://learn.microsoft.com/en-us/azure/mysql/flexible-server/quickstart-create-terraform?tabs=azure-cli
-- https://blobeater.blog/2022/01/19/azure-db-for-mysql-single-server-vs-flexible/#:~:text=Microsoft%20position%20flexible%20server%20as,service%20designed%20for%20minimal%20customization.
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mysql_flexible_server_firewall_rule
-- https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
-- https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet
-- https://dev.mysql.com/doc/connector-python/en/quick-installation-guide.html
-- https://www.youtube.com/watch?v=c8r5BLoRAwg
-- https://learn.microsoft.com/en-us/azure/service-connector/how-to-integrate-mysql?tabs=python
-- https://learn.microsoft.com/en-us/azure/app-service/reference-app-settings?tabs=kudu%2Cdotnet
-- https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
-- https://medium.com/@connect.hashblock/creating-an-api-in-flask-with-mysql-a-step-by-step-guide-446f08722057
-- https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-network-from-private-to-public
-- https://www.geeksforgeeks.org/mysql-create-table/
-- https://www.w3schools.com/mysql/mysql_create_table.asp
-- https://dev.mysql.com/doc/refman/8.4/en/create-table.html
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
-- https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret
-- https://www.w3schools.com/sql/sql_insert.asp
-- https://learn.microsoft.com/en-us/azure/app-service/configure-language-python#troubleshooting
-- https://learn.microsoft.com/en-us/answers/questions/783609/while-hosting-webapp-in-azure-i-am-getting-this-er
-- https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
-- https://flask-login.readthedocs.io/en/latest/
-- https://flask.palletsprojects.com/en/latest/quickstart/#sessions
-- https://www.geeksforgeeks.org/login-and-registration-project-using-flask-and-mysql/
-- https://www.youtube.com/watch?v=71EU8gnZqZQ
+<a href="https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli">Authenticate Azure CLI</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs">Terraform AzureRM Provider Docs</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob">Terraform Storage Blob Resource</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli">Terraform with Azure CLI</a><br>
+<a href="https://developer.hashicorp.com/terraform/cli/run">Terraform CLI Run Docs</a><br>
+<a href="https://developer.hashicorp.com/terraform/cli">Terraform CLI</a><br>
+<a href="https://developer.hashicorp.com/terraform/cli/commands/plan">Terraform Plan Command</a><br>
+<a href="https://spacelift.io/blog/terraform-tutorial">Spacelift Terraform Tutorial</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website">Azure Static Website Overview</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-how-to?tabs=azure-portal#upload-files">Upload Files to Azure Blob Static Website</a><br>
+<a href="https://www.browserstack.com/guide/build-a-website-using-html-css">Build Website with HTML & CSS</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website-host">Azure Blob Static Website Hosting</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/app-service/provision-resource-terraform">Provision Azure App Service with Terraform</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service.html">Terraform App Service Resource</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan">Terraform App Service Plan</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_web_app">Terraform Linux Web App</a><br>
+<a href="https://galaxy.ansible.com/ui/repo/published/azure/azcollection/">Ansible Azure Collection</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/developer/ansible/install-on-linux-vm?tabs=azure-cli#install-ansible-on-an-azure-linux-virtual-machine">Install Ansible on Azure VM</a><br>
+<a href="https://learn.microsoft.com/en-us/cli/azure/azure-cli-sp-tutorial-1?wt.mc_id=searchAPI_azureportal_inproduct_rmskilling&sessionId=cbce6ec3338248c0be2c8463c754def8&tabs=powershell">Azure CLI SP Tutorial</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/developer/ansible/azure-web-apps-configure">Configure Azure Web Apps with Ansible</a><br>
+<a href="https://docs.ansible.com/ansible/latest/collections/azure/azcollection/index.html#plugin-index">Ansible Azure Plugin Index</a><br>
+<a href="https://www.tutorialspoint.com/yaml/yaml_scalars_and_tags.htm#:~:text=YAML%20flow%20scalars%20include%20plain,always%20folded%20in%20this%20structure.">YAML Scalars and Tags</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli">Deploy ZIP to Azure App Service</a><br>
+<a href="https://spacelift.io/blog/ansible-variables">Ansible Variables Explained</a><br>
+<a href="https://learn.microsoft.com/en-us/cli/azure/webapp/deployment/source?view=azure-cli-latest#az-webapp-deployment-source-config-zip">Azure WebApp ZIP Deployment</a><br>
+<a href="https://flask.palletsprojects.com/en/stable/installation/">Flask Installation</a><br>
+<a href="https://flask.palletsprojects.com/en/latest/quickstart/#a-minimal-application">Flask Quickstart</a><br>
+<a href="https://www.geeksforgeeks.org/flask-rendering-templates/">Flask Rendering Templates</a><br>
+<a href="https://github.com/Azure-Samples/python-docs-hello-world/blob/master/app.py">Azure Flask App Example</a><br>
+<a href="https://realpython.com/python-web-applications/">Real Python Web App Guide</a><br>
+<a href="https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_webapp_module.html#ansible-collections-azure-azcollection-azure-rm-webapp-module">Ansible azure_rm_webapp_module</a><br>
+<a href="https://docs.ansible.com/ansible/latest/collections/azure/azcollection/azure_rm_appserviceplan_module.html#ansible-collections-azure-azcollection-azure-rm-appserviceplan-module">Ansible azure_rm_appserviceplan_module</a><br>
+<a href="https://www.youtube.com/watch?v=ujiJaz2bRII">YouTube Flask Tutorial</a><br>
+<a href="https://medium.com/swlh/making-use-of-apis-in-your-front-end-c168e343bea3">Using APIs in Frontend</a><br>
+<a href="https://www.digitalocean.com/community/tutorials/how-to-use-the-javascript-fetch-api-to-get-data">Using JS Fetch API</a><br>
+<a href="https://medium.com/%40mterrano1/cors-in-a-flask-api-38051388f8cc">CORS in Flask API</a><br>
+<a href="https://www.geeksforgeeks.org/how-to-install-flask-cors-in-python/">Install Flask-CORS</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mysql_flexible_server">Terraform MySQL Flexible Server</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/mysql/flexible-server/quickstart-create-terraform?tabs=azure-cli">Azure MySQL Terraform Quickstart</a><br>
+<a href="https://blobeater.blog/2022/01/19/azure-db-for-mysql-single-server-vs-flexible/#:~:text=Microsoft%20position%20flexible%20server%20as,service%20designed%20for%20minimal%20customization.">Azure MySQL: Single vs Flexible</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mysql_flexible_server_firewall_rule">Terraform MySQL Firewall Rule</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string">Terraform Random String</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password">Terraform Random Password</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network">Terraform Virtual Network</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet">Terraform Subnet</a><br>
+<a href="https://dev.mysql.com/doc/connector-python/en/quick-installation-guide.html">MySQL Connector/Python Installation</a><br>
+<a href="https://www.youtube.com/watch?v=c8r5BLoRAwg">Deploy Flask on Azure Video</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/service-connector/how-to-integrate-mysql?tabs=python">Azure Service Connector MySQL</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/app-service/reference-app-settings?tabs=kudu%2Cdotnet">Azure App Settings Reference</a><br>
+<a href="https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/">Flask + MySQL Profile App</a><br>
+<a href="https://medium.com/@connect.hashblock/creating-an-api-in-flask-with-mysql-a-step-by-step-guide-446f08722057">Create API in Flask with MySQL</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-network-from-private-to-public">Azure MySQL Private to Public</a><br>
+<a href="https://www.geeksforgeeks.org/mysql-create-table/">MySQL Create Table (GeeksforGeeks)</a><br>
+<a href="https://www.w3schools.com/mysql/mysql_create_table.asp">MySQL Create Table (W3Schools)</a><br>
+<a href="https://dev.mysql.com/doc/refman/8.4/en/create-table.html">MySQL Create Table (Official Docs)</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault">Terraform Key Vault</a><br>
+<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret">Terraform Key Vault Secret</a><br>
+<a href="https://www.w3schools.com/sql/sql_insert.asp">SQL INSERT (W3Schools)</a><br>
+<a href="https://learn.microsoft.com/en-us/azure/app-service/configure-language-python#troubleshooting">Azure App Python Troubleshooting</a><br>
+<a href="https://learn.microsoft.com/en-us/answers/questions/783609/while-hosting-webapp-in-azure-i-am-getting-this-er">Azure Web App Hosting Error</a><br>
+<a href="https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database">Flask Mega Tutorial - Database</a><br>
+<a href="https://flask-login.readthedocs.io/en/latest/">Flask-Login Docs</a><br>
+<a href="https://flask.palletsprojects.com/en/latest/quickstart/#sessions">Flask Sessions</a><br>
+<a href="https://www.geeksforgeeks.org/login-and-registration-project-using-flask-and-mysql/">Login and Registration with Flask & MySQL</a><br>
+<a href="https://www.youtube.com/watch?v=71EU8gnZqZQ">Flask + MySQL YouTube Tutorial</a><br>
+
 
 
 
