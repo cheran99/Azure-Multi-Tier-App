@@ -13,9 +13,9 @@ Organisations that rely on monolithic systems tend to struggle with scalability,
 - Azure App Service (Linux Web App)
 - Azure Blob Storage (Static Website Hosting + Backups)
 - Flask (Python Web Framework)
-- MySQL (Local on VM)
-- Terraform (Infrastructure as Code)
-- Ansible (Automation and Deployment)
+- Azure Database for MySQL Flexible Server
+- Terraform (Infrastructure as Code for provisioning Azure resources)
+- Ansible (Automating deployment and configuration)
 - Windows Subsystem for Linux (WSL)
 - Visual Studio Code 
 
