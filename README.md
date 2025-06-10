@@ -17,7 +17,11 @@ Organisations that rely on monolithic systems tend to struggle with scalability,
 - Terraform (Infrastructure as Code for provisioning Azure resources)
 - Ansible (Automating deployment and configuration)
 - Windows Subsystem for Linux (WSL)
-- Visual Studio Code 
+- Visual Studio Code
+
+### Architecture Diagram
+
+![Azure Multitier App diagram](https://github.com/user-attachments/assets/123ae312-e6d4-4b85-8cf8-d709ff6e425c)
 
 ## Deployment Guide
 
